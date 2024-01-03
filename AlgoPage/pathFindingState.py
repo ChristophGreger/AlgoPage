@@ -1,15 +1,17 @@
-from typing import List
+from typing import List, Tuple
 
 import reflex as rx
 
 
 class PathFindingState(rx.State):
-    start: tuple[int, int] = (0, 0)
-    end: tuple[int, int] = (19, 19)
+    start: Tuple[int, int] = (0, 0)
+    end: Tuple[int, int] = (19, 19)
     startmatrix: List[List[bool]] = [[False for i in range(20)] for j in range(20)]
     startmatrix[0][0] = True
     endmatrix: List[List[bool]] = [[False for i in range(20)] for j in range(20)]
     endmatrix[19][19] = True
+    searchmatrix: List[List[bool]] = [[False for i in range(20)] for j in range(20)]
+    pathmatrix: List[List[bool]] = [[False for i in range(20)] for j in range(20)]
     currentlysetting: bool = True  # True if setting start, False if setting end
 
     def isStart(self, row: int, col: int) -> bool:
