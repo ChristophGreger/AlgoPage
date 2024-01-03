@@ -10,8 +10,8 @@ def index() -> rx.Component:
             button=True,
         ),
         rx.link(
-            rx.button("Coming soon..."),
-            href="/",
+            rx.button("Path Finding"),
+            href="/pathFinding",
             color="rgb(107,99,246)",
             button=True,
         ),
