@@ -7,32 +7,8 @@ def abutton(row: int, col: int, color: str) -> rx.Component:
     return rx.button("", bg=color, button=True, on_click=lambda: PathFindingState.setStartandEnd(row, col))
 
 
-def endingButton(row: int, col: int) -> rx.Component:
-    return abutton(row, col, "red")
-
-
-def startingButton(row: int, col: int) -> rx.Component:
-    return abutton(row, col, "green")
-
-
-def normalButton(row: int, col: int) -> rx.Component:
-    return abutton(row, col, "grey")
-
-
-def pathButton(row: int, col: int) -> rx.Component:
-    return abutton(row, col, "blue")
-
-
-def searchButton(row: int, col: int) -> rx.Component:
-    return abutton(row, col, "yellow")
-
-
 def mybutton(row: int, col: int) -> rx.Component:
-    return rx.cond(PathFindingState.endmatrix[row][col], endingButton(row, col),
-                   rx.cond(PathFindingState.startmatrix[row][col], startingButton(row, col),
-                           rx.cond(PathFindingState.pathmatrix[row][col], pathButton(row, col),
-                                   rx.cond(PathFindingState.searchmatrix[row][col], searchButton(row, col),
-                                           normalButton(row, col)))))
+    return abutton(row, col, PathFindingState.fieldmatrix[row][col])
 
 
 def generateButtonsasGridItems(row: int, col: int) -> rx.Component:
