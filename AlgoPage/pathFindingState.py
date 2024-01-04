@@ -2,6 +2,7 @@ from typing import List, Tuple, Set
 
 import reflex as rx
 import asyncio
+from .pathFindingGrids import getGridwithConfiguration
 
 
 class PathFindingState(rx.State):
@@ -38,7 +39,7 @@ class PathFindingState(rx.State):
         self.distancematrix[self.start[0]][self.start[1]] = 0
         self.finished: Set[Tuple[int, int]] = set()
         self.currentlyopen: Set[Tuple[int, int]] = set()
-        self.isnotsolvable = True
+        self.isnotsolvable = False
         for i in range(20):
             for j in range(20):
                 if self.fieldmatrix[i][j] == "yellow":
@@ -62,6 +63,10 @@ class PathFindingState(rx.State):
             self.fieldmatrix[row][col] = "black"
         elif self.fieldmatrix[row][col] == "black":
             self.fieldmatrix[row][col] = "grey"
+
+    def setGridwithConfiguration(self, index: int) -> None:
+        self.start, self.end, self.fieldmatrix = getGridwithConfiguration(index)
+        self.resetSolve()
 
     def setStarting(self, row: int, col: int) -> None:
         self.fieldmatrix[self.start[0]][self.start[1]] = "grey"
@@ -152,3 +157,11 @@ class PathFindingState(rx.State):
             return
         self.current = self.getlowestdistanceopen()
         yield from self.solvehelp()
+
+    def printGrid(self) -> None:
+        mymatrix = self.fieldmatrix.copy()
+        for i in range(20):
+            for j in range(20):
+                if mymatrix[i][j] in ["yellow", "blue"]:
+                    mymatrix[i][j] = "grey"
+        print(mymatrix)
