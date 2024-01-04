@@ -8,8 +8,8 @@ class PathFindingState(rx.State):
     start: Tuple[int, int] = (0, 0)
     end: Tuple[int, int] = (19, 19)
 
-    currentlysetting: bool = True  # True if setting start, False if setting end
-    distancematrix: List[List[int]] = [[100 for i in range(20)] for j in range(20)]
+    currentlysetting: str = "start"  # "start" if setting start, "end" if setting end, "barrier" if setting barrier
+    distancematrix: List[List[int]] = [[1000 for i in range(20)] for j in range(20)]
     distancematrix[start[0]][start[1]] = 0
     finished: Set[Tuple[int, int]] = set()
     currentlyopen: Set[Tuple[int, int]] = set()
@@ -26,24 +26,30 @@ class PathFindingState(rx.State):
             20)]  # "grey", "red", "green", "blue", "yellow" für normalbutton, endingbutton, startingbutton, pathbutton, searchbutton
         self.fieldmatrix[self.start[0]][self.start[1]] = "green"
         self.fieldmatrix[self.end[0]][self.end[1]] = "red"
-        self.currentlysetting = True
-        self.distancematrix: List[List[int]] = [[100 for i in range(20)] for j in range(20)]
+        self.currentlysetting = "start"
+        self.distancematrix: List[List[int]] = [[1000 for i in range(20)] for j in range(20)]
         self.distancematrix[self.start[0]][self.start[1]] = 0
         self.finished: Set[Tuple[int, int]] = set()
         self.currentlyopen: Set[Tuple[int, int]] = set()
 
-    def setcurrentlysetting(self, value: bool) -> None:
+    def setcurrentlysetting(self, value: str) -> None:
         self.currentlysetting = value
 
-    def setStartandEnd(self, row: int, col: int) -> None:
-        if self.currentlysetting:
+    def setStartandEndandBarrier(self, row: int, col: int) -> None:
+        if self.currentlysetting == "start":
             self.setStarting(row, col)
-        else:
+        elif self.currentlysetting == "end":
             self.setEnding(row, col)
+        elif self.currentlysetting == "barrier":
+            self.setBarrier(row, col)
+
+    def setBarrier(self, row: int, col: int) -> None:
+        if self.fieldmatrix[row][col] == "grey":
+            self.fieldmatrix[row][col] = "black"
 
     def setStarting(self, row: int, col: int) -> None:
         self.fieldmatrix[self.start[0]][self.start[1]] = "grey"
-        self.distancematrix[self.start[0]][self.start[1]] = 100
+        self.distancematrix[self.start[0]][self.start[1]] = 1000
         self.start = (row, col)
         self.fieldmatrix[row][col] = "green"
         self.distancematrix[row][col] = 0
@@ -56,20 +62,24 @@ class PathFindingState(rx.State):
     def getneighbors(self, pos: Tuple[int, int]) -> Set[Tuple[int, int]]:
         neighbors: Set[Tuple[int, int]] = set()
         if pos[0] > 0:
-            neighbors.add((pos[0] - 1, pos[1]))
+            if self.fieldmatrix[pos[0] - 1][pos[1]] != "black":
+                neighbors.add((pos[0] - 1, pos[1]))
         if pos[0] < 19:
-            neighbors.add((pos[0] + 1, pos[1]))
+            if self.fieldmatrix[pos[0] + 1][pos[1]] != "black":
+                neighbors.add((pos[0] + 1, pos[1]))
         if pos[1] > 0:
-            neighbors.add((pos[0], pos[1] - 1))
+            if self.fieldmatrix[pos[0]][pos[1] - 1] != "black":
+                neighbors.add((pos[0], pos[1] - 1))
         if pos[1] < 19:
-            neighbors.add((pos[0], pos[1] + 1))
+            if self.fieldmatrix[pos[0]][pos[1] + 1] != "black":
+                neighbors.add((pos[0], pos[1] + 1))
         if self.start in neighbors:
             neighbors.remove(self.start)
         return neighbors
 
     def getlowestdistanceopen(self) -> Tuple[int, int]:
         lowest: Tuple[int, int] = (0, 0)
-        lowestdistance: int = 100
+        lowestdistance: int = 1000
         for coordinate in self.currentlyopen:
             distance = self.distancematrix[coordinate[0]][coordinate[1]]
             if distance < lowestdistance:
@@ -94,10 +104,12 @@ class PathFindingState(rx.State):
         self.justatuple = self.end
         for i in self.solvehelp():
             yield
+            await asyncio.sleep(0.02)
         for i in self.drawpathmatrix():
             yield
             await asyncio.sleep(0.1)
 
+    # TODO Wenn es keinen Weg gibt, dann soll das Programm das anzeigen.
     def solvehelp(self) -> None:
         currentdistance = self.distancematrix[self.current[0]][self.current[1]]
         for coordinate in self.getneighbors(self.current):
@@ -108,9 +120,9 @@ class PathFindingState(rx.State):
                 yield
                 if not self.fieldmatrix[coordinate[0]][coordinate[1]] == "red":
                     self.fieldmatrix[coordinate[0]][coordinate[1]] = "yellow"
+                if coordinate == self.end:
+                    return
         self.finished.add(self.current)
-        if self.current == self.end:
-            return
         if self.current in self.currentlyopen:
             self.currentlyopen.remove(self.current)
         self.current = self.getlowestdistanceopen()
