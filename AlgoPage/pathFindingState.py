@@ -31,6 +31,20 @@ class PathFindingState(rx.State):
         self.distancematrix[self.start[0]][self.start[1]] = 0
         self.finished: Set[Tuple[int, int]] = set()
         self.currentlyopen: Set[Tuple[int, int]] = set()
+        self.isnotsolvable = False
+
+    def resetSolve(self):
+        self.distancematrix: List[List[int]] = [[1000 for i in range(20)] for j in range(20)]
+        self.distancematrix[self.start[0]][self.start[1]] = 0
+        self.finished: Set[Tuple[int, int]] = set()
+        self.currentlyopen: Set[Tuple[int, int]] = set()
+        self.isnotsolvable = True
+        for i in range(20):
+            for j in range(20):
+                if self.fieldmatrix[i][j] == "yellow":
+                    self.fieldmatrix[i][j] = "grey"
+                elif self.fieldmatrix[i][j] == "blue":
+                    self.fieldmatrix[i][j] = "grey"
 
     def setcurrentlysetting(self, value: str) -> None:
         self.currentlysetting = value
@@ -46,6 +60,8 @@ class PathFindingState(rx.State):
     def setBarrier(self, row: int, col: int) -> None:
         if self.fieldmatrix[row][col] == "grey":
             self.fieldmatrix[row][col] = "black"
+        elif self.fieldmatrix[row][col] == "black":
+            self.fieldmatrix[row][col] = "grey"
 
     def setStarting(self, row: int, col: int) -> None:
         self.fieldmatrix[self.start[0]][self.start[1]] = "grey"
@@ -99,15 +115,21 @@ class PathFindingState(rx.State):
     current: Tuple[int, int] = start
     justatuple: Tuple[int, int] = end
 
+    isnotsolvable: bool = False
+
     async def solve(self) -> None:
         self.current = self.start
         self.justatuple = self.end
         for i in self.solvehelp():
             yield
             await asyncio.sleep(0.02)
-        for i in self.drawpathmatrix():
-            yield
-            await asyncio.sleep(0.1)
+        if not self.isnotsolvable:
+            for i in self.drawpathmatrix():
+                yield
+                await asyncio.sleep(0.1)
+        else:
+            print("Not solvable")
+            self.resetSolve()
 
     # TODO Wenn es keinen Weg gibt, dann soll das Programm das anzeigen.
     def solvehelp(self) -> None:
@@ -125,5 +147,8 @@ class PathFindingState(rx.State):
         self.finished.add(self.current)
         if self.current in self.currentlyopen:
             self.currentlyopen.remove(self.current)
+        if self.currentlyopen == set():
+            self.isnotsolvable = True
+            return
         self.current = self.getlowestdistanceopen()
         yield from self.solvehelp()

@@ -26,6 +26,7 @@ def pathFinding() -> rx.Component:
                                   color="green"),
                         rx.button("Setze Endpunkt", on_click=PathFindingState.setcurrentlysetting("end"), color="red"),
                         rx.button("Setze Barriers", on_click=PathFindingState.setcurrentlysetting("barrier"), color="blue"),
-                        rx.button("Solve", on_click=lambda: PathFindingState.solve()),
-                        rx.button("Reset", on_click=lambda: PathFindingState.resetGrid())
+                        rx.button("Solve", on_click=PathFindingState.solve()),
+                        rx.button("Reset Solve", on_click=PathFindingState.resetSolve()),
+                        rx.button("Reset", on_click=PathFindingState.resetGrid()),
                         )
