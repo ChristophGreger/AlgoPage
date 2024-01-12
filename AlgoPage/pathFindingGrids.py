@@ -4,7 +4,7 @@ from typing import Tuple, List
 def getGridwithConfiguration(index: int) -> Tuple[Tuple[int, int], Tuple[int, int], List[List[str]]]:  # start, end, fieldmatrix
     start = (0, 0)
     end = (19, 19)
-    grid = gridlist[index]
+    grid = gridlist[index].copy()
     for i in range(20):
         for j in range(20):
             if grid[i][j] == "green":

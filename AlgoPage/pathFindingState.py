@@ -133,10 +133,10 @@ class PathFindingState(rx.State):
                 yield
                 await asyncio.sleep(0.1)
         else:
+            yield rx.window_alert("Not solvable")
             print("Not solvable")
             self.resetSolve()
 
-    # TODO Wenn es keinen Weg gibt, dann soll das Programm das anzeigen.
     def solvehelp(self) -> None:
         currentdistance = self._distancematrix[self._current[0]][self._current[1]]
         for coordinate in self.getneighbors(self._current):
