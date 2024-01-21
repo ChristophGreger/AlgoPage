@@ -1,10 +1,12 @@
 from typing import Tuple, List
+from copy import deepcopy
 
 
-def getGridwithConfiguration(index: int) -> Tuple[Tuple[int, int], Tuple[int, int], List[List[str]]]:  # start, end, fieldmatrix
+def getGridwithConfiguration(index: int) -> Tuple[
+    Tuple[int, int], Tuple[int, int], List[List[str]]]:  # start, end, fieldmatrix
     start = (0, 0)
     end = (19, 19)
-    grid = gridlist[index].copy()
+    grid = deepcopy(gridlist[index])
     for i in range(20):
         for j in range(20):
             if grid[i][j] == "green":
