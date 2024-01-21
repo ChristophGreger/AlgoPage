@@ -8,10 +8,12 @@ from . import pathFindingGrids
 from .pathFindingState import PathFindingState
 
 
+# General Button
 def abutton(row: int, col: int, color: str) -> rx.Component:
     return rx.button("", bg=color, button=True, on_click=lambda: PathFindingState.setStartandEndandBarrier(row, col))
 
 
+# Making a colored Button out of the fieldmatrix
 def mybutton(row: int, col: int) -> rx.Component:
     return abutton(row, col, PathFindingState.fieldmatrix[row][col])
 
@@ -28,6 +30,7 @@ def presetButton(index: int) -> rx.Component:
     return rx.button("Preset " + str(index), on_click=PathFindingState.setGridwithConfiguration(index))
 
 
+# Takes the presets and makes them into buttons
 def allPresetButtons() -> list[Component]:
     return [presetButton(index) for index in range(len(pathFindingGrids.gridlist))]
 

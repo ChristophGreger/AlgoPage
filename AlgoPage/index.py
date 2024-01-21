@@ -1,6 +1,7 @@
 import reflex as rx
 
 
+# This is the index page
 def index() -> rx.Component:
     return rx.container(
         rx.link(

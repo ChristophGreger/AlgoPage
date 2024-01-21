@@ -2,6 +2,7 @@ from typing import Tuple, List
 from copy import deepcopy
 
 
+# Loads the grid with the given index and returns the start and end position as well as the grid
 def getGridwithConfiguration(index: int) -> Tuple[
     Tuple[int, int], Tuple[int, int], List[List[str]]]:  # start, end, fieldmatrix
     start = (0, 0)
