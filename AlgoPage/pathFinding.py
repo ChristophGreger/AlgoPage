@@ -3,7 +3,7 @@ from reflex import Component
 
 from . import pathFindingGrids
 
-from .pathFindingState import PathFindingState
+from .pathFindingState import PathFindingState, algorithms
 
 
 # General Button
@@ -45,5 +45,10 @@ def pathFinding() -> rx.Component:
                         rx.button("Reset Solve", on_click=PathFindingState.resetSolve()),
                         rx.button("Reset", on_click=PathFindingState.resetGrid()),
                         rx.button("Print Grid", on_click=PathFindingState.printGrid()),
-                        *allPresetButtons()
+                        *allPresetButtons(),
+                        rx.select(
+                            algorithms,
+                            on_change=PathFindingState.set_algorithm,
+                            color_schemes="twitter",
+                        ),
                         )

@@ -4,8 +4,11 @@ import reflex as rx
 import asyncio
 from .pathFindingGrids import getGridwithConfiguration
 
+algorithms: List[str] = ["Breadth-First Search", "Depth-First Search"]
+
 
 class PathFindingState(rx.State):
+    algorithm: str = algorithms[0]
     _start: Tuple[int, int] = (0, 0)
     _end: Tuple[int, int] = (19, 19)
 
@@ -122,22 +125,48 @@ class PathFindingState(rx.State):
 
     isnotsolvable: bool = False
 
+    # Makes choosing the chosen algorithm
     async def solve(self) -> None:
+        x = algorithms.index(self.algorithm)
+        if x == 0:
+            for i in self.solveBFS():
+                yield
+                if i == 0:
+                    await asyncio.sleep(0.02)
+                elif i == 1:
+                    await asyncio.sleep(0.1)
+                else:
+                    yield i
+        elif x == 1:
+            for i in self.solveDFS():
+                yield
+                if i == 0:
+                    await asyncio.sleep(0.02)
+                elif i == 1:
+                    await asyncio.sleep(0.1)
+                else:
+                    yield i
+
+    # solves the Grid with DFS
+    # TODO implement DFS
+    def solveDFS(self) -> None:
+        pass
+
+    # solves the Grid with BFS
+    def solveBFS(self) -> None:
         self._current = self._start
         self._justatuple = self._end
-        for i in self.solvehelp():
-            yield
-            await asyncio.sleep(0.02)
+        for i in self.solveBFShelp():
+            yield 0
         if not self.isnotsolvable:
             for i in self.drawpathmatrix():
-                yield
-                await asyncio.sleep(0.1)
+                yield 1
         else:
             yield rx.window_alert("Not solvable")
             print("Not solvable")
             self.resetSolve()
 
-    def solvehelp(self) -> None:
+    def solveBFShelp(self) -> None:
         currentdistance = self._distancematrix[self._current[0]][self._current[1]]
         for coordinate in self.getneighbors(self._current):
             coordinatedistance = self._distancematrix[coordinate[0]][coordinate[1]]
@@ -156,7 +185,7 @@ class PathFindingState(rx.State):
             self.isnotsolvable = True
             return
         self._current = self.getlowestdistanceopen()
-        yield from self.solvehelp()
+        yield from self.solveBFShelp()
 
     def printGrid(self) -> None:
         mymatrix = self.fieldmatrix.copy()
