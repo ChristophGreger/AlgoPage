@@ -1,5 +1,3 @@
-from typing import List
-
 import reflex as rx
 from reflex import Component
 
