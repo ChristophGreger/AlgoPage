@@ -8,6 +8,5 @@ A visulization of different algorithms using Python and Reflex.
 
 ## Algorithms implemented
 
-- (Dijkstra)
-- (DFS)
-- (BFS)
+- DFS
+- BFS
