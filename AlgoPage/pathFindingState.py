@@ -83,6 +83,7 @@ class PathFindingState(rx.State):
         self._end = (row, col)
         self.fieldmatrix[row][col] = "red"
 
+    # Returns the neighbors of a given position, but only if they are not black
     def getneighbors(self, pos: Tuple[int, int]) -> Set[Tuple[int, int]]:
         neighbors: Set[Tuple[int, int]] = set()
         if pos[0] > 0:
@@ -100,6 +101,14 @@ class PathFindingState(rx.State):
         if self._start in neighbors:
             neighbors.remove(self._start)
         return neighbors
+
+    # Returns the neighbors of a given position, but only if they are not black, yellow or green
+    def getuntouchedneighbors(self, pos: Tuple[int, int]) -> Set[Tuple[int, int]]:
+        myset = self.getneighbors(pos)
+        for i in myset.copy():
+            if self.fieldmatrix[i[0]][i[1]] in {"yellow", "green", "black"}:
+                myset.remove(i)
+        return myset
 
     def getlowestdistanceopen(self) -> Tuple[int, int]:
         lowest: Tuple[int, int] = (0, 0)
@@ -148,9 +157,31 @@ class PathFindingState(rx.State):
                     yield i
 
     # solves the Grid with DFS
-    # TODO implement DFS
     def solveDFS(self) -> None:
-        pass
+        for i in self.solveDFShelp(self._start):
+            if i == "found":
+                break
+            yield 0
+        else:
+            self.isnotsolvable = True
+        if not self.isnotsolvable:
+            for i in self.drawpathmatrix():
+                yield 1
+        else:
+            yield rx.window_alert("Not solvable")
+            print("Not solvable")
+            self.resetSolve()
+
+    def solveDFShelp(self, source: Tuple[int, int]) -> None:
+        for neighbor in self.getuntouchedneighbors(source):
+            if self.fieldmatrix[neighbor[0]][neighbor[1]] == "yellow":
+                continue
+            if neighbor == self._end:
+                yield "found"
+            self.fieldmatrix[neighbor[0]][neighbor[1]] = "yellow"
+            self._distancematrix[neighbor[0]][neighbor[1]] = self._distancematrix[source[0]][source[1]] + 1
+            yield
+            yield from self.solveDFShelp(neighbor)
 
     # solves the Grid with BFS
     def solveBFS(self) -> None:
