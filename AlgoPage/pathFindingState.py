@@ -136,6 +136,7 @@ class PathFindingState(rx.State):
 
     # Makes choosing the chosen algorithm
     async def solve(self) -> None:
+        self.resetSolve()
         x = algorithms.index(self.algorithm)
         if x == 0:
             for i in self.solveBFS():
@@ -158,6 +159,7 @@ class PathFindingState(rx.State):
 
     # solves the Grid with DFS
     def solveDFS(self) -> None:
+        self._justatuple = self._end
         for i in self.solveDFShelp(self._start):
             if i == "found":
                 break
@@ -201,7 +203,7 @@ class PathFindingState(rx.State):
         currentdistance = self._distancematrix[self._current[0]][self._current[1]]
         for coordinate in self.getneighbors(self._current):
             coordinatedistance = self._distancematrix[coordinate[0]][coordinate[1]]
-            if coordinatedistance > currentdistance + 1:  # Hier stand mal ein plus 1
+            if coordinatedistance > currentdistance + 1:
                 self._distancematrix[coordinate[0]][coordinate[1]] = currentdistance + 1
                 self._currentlyopen.add(coordinate)
                 yield
