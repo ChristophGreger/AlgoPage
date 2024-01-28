@@ -9,4 +9,4 @@ RUN bash /home/AlgoPage/install.sh
 EXPOSE 8000/tcp
 EXPOSE 3000/tcp
 RUN chmod +x entrypoint.sh
-ENTRYPOINT ["bash /home/AlgoPage/entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
