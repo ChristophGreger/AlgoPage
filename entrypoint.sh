@@ -1,6 +1,6 @@
 #!/bin/bash
 source /home/AlgoPage/.venv/bin/activate
 cd /home/AlgoPage
-# screen -AmdS reflexpage reflex run
-reflex run
-echo "ReflexPage started"
+echo "Starting ReflexPage"
+screen -AmdS reflexpage reflex run
+echo "ReflexPage started!"
