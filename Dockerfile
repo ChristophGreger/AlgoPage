@@ -6,7 +6,7 @@ RUN apt-get update && \
     git clone --branch Docker https://github.com/ChristophGreger/AlgoPage.git
 WORKDIR /home/AlgoPage
 RUN bash /home/AlgoPage/install.sh
-RUN reflex init
+# RUN reflex init
 EXPOSE 8000/tcp
 EXPOSE 3000/tcp
 ENTRYPOINT ["./entrypoint.sh"]
