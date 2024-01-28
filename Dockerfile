@@ -12,4 +12,4 @@ RUN python3 -m venv .venv && \
 RUN reflex init
 EXPOSE 8000/tcp
 EXPOSE 3000/tcp
-ENTRYPOINT ["reflex run"]
+# ENTRYPOINT ["screen -AmdS myreflex reflex run"]
