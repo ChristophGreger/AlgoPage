@@ -26,11 +26,12 @@ def isvariable(form):
 
 
 # Funktion um alle Variablen in einer Formel zu finden und diese als Set zurückzugeben
+# TODO Die Liste muss geordnet sein, sodass die Variablen, die zuerst in der Formel vorkommen, auch zuerst in der Liste sind
 def allvariables(form):
-    variables = set()
+    variables = []
     for x in subformulas(form):
         if isvariable(x):
-            variables.add(x)
+            variables.append(x)
     return variables
 
 
