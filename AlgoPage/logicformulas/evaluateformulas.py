@@ -43,6 +43,67 @@ def evaluateformhelper(form, model) -> bool:
         raise ValueError("Formel ist nicht korrekt")
 
 
+# Funktion, die eine Formel in eine Form umwandelt, die überhaupt keine unnötigen Klammern enthält
+def eliminatealluselessbrackets(form: str) -> str:
+    form = Subformula.elminateuselessbraces(form)
+
+    # Hier wird gecheckt, ob die Formel syntaktisch korrekt ist
+    evaluation = EvaluateForm(form)
+
+    return eliminatealluselessbracketshelper(form)
+
+
+def eliminatealluselessbracketshelper(form: str) -> str:
+    subs, element, position = Subformula.directsubformulas(form)
+
+    # Die beiden Fälle, in denen die Formel eine Variable oder ein unary Operator (Negation) ist
+    if element == "v":
+        return Subformula.elminateuselessbraces(form)
+    if element == "!" and len(subs) == 1:
+        sub2, element2, position2 = Subformula.directsubformulas(subs[0])
+        if element2 == "v":
+            return "!" + Subformula.elminateuselessbraces(subs[0])
+        else:
+            return "!(" + eliminatealluselessbracketshelper(Subformula.elminateuselessbraces(subs[0])) + ")"
+
+    subs2, element2, position2 = Subformula.directsubformulas(subs[0])
+    subs3, element3, position3 = Subformula.directsubformulas(subs[1])
+    toreturnright = ""
+    toreturnleft = ""
+
+    # Rechtsassoziativer Fall
+    if element in {"&", "|"}:
+        if bindsstrongerthan(element, element2):
+            toreturnleft = "(" + eliminatealluselessbracketshelper(subs[0]) + ")"
+        else:
+            toreturnleft = eliminatealluselessbracketshelper(subs[0])
+        if bindsstrongerthan(element, element3, False):
+            toreturnright = "(" + eliminatealluselessbracketshelper(subs[1]) + ")"
+        else:
+            toreturnright = eliminatealluselessbracketshelper(subs[1])
+
+    # Linksassoziativer Fall
+    if element in {"=", ">"}:
+        if bindsstrongerthan(element, element2, False):
+            toreturnleft = "(" + eliminatealluselessbracketshelper(subs[0]) + ")"
+        else:
+            toreturnleft = eliminatealluselessbracketshelper(subs[0])
+        if bindsstrongerthan(element, element3):
+            toreturnright = "(" + eliminatealluselessbracketshelper(subs[1]) + ")"
+        else:
+            toreturnright = eliminatealluselessbracketshelper(subs[1])
+
+    return toreturnleft + element + toreturnright
+
+
+def bindsstrongerthan(element1: str, element2: str, leftchecking: bool = True) -> bool:
+    operatorlist = ["v", "!", "&", "|", ">", "="]
+    if leftchecking:
+        return operatorlist.index(element1) <= operatorlist.index(element2)
+    else:
+        return operatorlist.index(element1) < operatorlist.index(element2)
+
+
 if __name__ == "__main__":
-    formula = "((A&B)|C)"
-    EvaluateForm(formula)
+    formula = "A&B|(C)>(A=B)"
+    print(eliminatealluselessbrackets(formula))

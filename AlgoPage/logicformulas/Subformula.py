@@ -124,15 +124,15 @@ def directsubformulas(form):
     # Checken ob das oberste Element ein logisches Oder ist
     for i in range(len(form)):
         if form[-i] == "|" and correctbraces(form[-i + 1:]):
-            dirsubformulas.append(elminateuselessbraces(form[-i + 1:]))
             dirsubformulas.append(elminateuselessbraces(form[:-i]))
+            dirsubformulas.append(elminateuselessbraces(form[-i + 1:]))
             return dirsubformulas, "|", i
 
     # Nun muss das oberste Element ein logisches UND sein
     for i in range(len(form)):
         if form[-i] == "&" and correctbraces(form[-i + 1:]):
-            dirsubformulas.append(elminateuselessbraces(form[-i + 1:]))
             dirsubformulas.append(elminateuselessbraces(form[:-i]))
+            dirsubformulas.append(elminateuselessbraces(form[-i + 1:]))
             return dirsubformulas, "&", i
 
     raise ValueError("Formel ist nicht syntaktisch korrekt")
@@ -144,6 +144,6 @@ def directsubformulas(form):
 # eingegebene Formel muss syntaktisch korrekt sein
 
 if __name__ == "__main__":
-    formula = input("Gib jetzt die Formel ein: ")
-
-    print(subformulas(formula))
+    while True:
+        formula = input("Gib jetzt die Formel ein: ")
+        print(directsubformulas(formula))
