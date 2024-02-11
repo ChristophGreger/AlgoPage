@@ -14,6 +14,7 @@ class LogicState(rx.State):
         self.tableheaders = subs.copy()
         self.tableheaders.append("RESULT")
         evaluationlist = evaluateformulas.EvaluateForm(self.formula)
+        self.tablerows.clear()
         for modelvaluecombo in evaluationlist:
             row = ()
             for variable in subs:
