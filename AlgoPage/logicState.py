@@ -25,5 +25,12 @@ class LogicState(rx.State):
         except ValueError as e:
             return rx.window_alert(str(e))
 
+    def setPreset(self, preset: int):
+        if preset == 1:
+            self.formula = "((A&B)|C)"
+        elif preset == 2:
+            self.formula = "((var1|var2)&var3)=var4&var3|var1"
+        self.submit()
+
 
 

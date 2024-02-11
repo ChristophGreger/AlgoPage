@@ -10,7 +10,12 @@ def logic() -> rx.Component:
             value=LogicState.formula,
             on_change=LogicState.set_formula,
         ),
-        rx.button("Calculate Table", on_click=LogicState.submit),
+        rx.hstack(
+            rx.button("Calculate Table", on_click=LogicState.submit),
+            rx.button("Preset 1", on_click=LogicState.setPreset(1)),
+            rx.button("Preset 2", on_click=LogicState.setPreset(2)),
+            rx.text("'>': Implikation, '=': Äquivalenz, '&': Konjunktion, '|': Disjunktion, '!': Negation"),
+        ),
         rx.table_container(
             rx.table(
                 headers=LogicState.tableheaders,
