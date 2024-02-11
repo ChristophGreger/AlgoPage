@@ -5,10 +5,13 @@ from .logicState import LogicState
 def logic() -> rx.Component:
     return rx.fragment(
         rx.text("Input your formula: "),
-        rx.input(
-            type="text",
-            value=LogicState.formula,
-            on_change=LogicState.set_formula,
+        rx.hstack(
+            rx.input(
+                type="text",
+                value=LogicState.formula,
+                on_change=LogicState.set_formula,
+            ),
+            rx.text("Formula without useless brackets: " + LogicState.bracketlessformula),
         ),
         rx.hstack(
             rx.button("Calculate Table", on_click=LogicState.submit),

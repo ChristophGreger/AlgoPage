@@ -8,9 +8,11 @@ class LogicState(rx.State):
     formula: str = ""
     tableheaders: List[str] = []
     tablerows: List[tuple] = []
+    bracketlessformula: str = ""
 
     def submit(self):
         try:
+            self.bracketlessformula = evaluateformulas.eliminatealluselessbrackets(self.formula)
             subs = Subformula.allvariables(self.formula)
             self.tableheaders = subs.copy()
             self.tableheaders.append("RESULT")
@@ -22,7 +24,7 @@ class LogicState(rx.State):
                     row += ("True" if modelvaluecombo[0][variable] else "False",)
                 row += ("True" if modelvaluecombo[1] else "False",)
                 self.tablerows.append(row)
-        except ValueError as e:
+        except Exception as e:
             return rx.window_alert(str(e))
 
     def setPreset(self, preset: int):
