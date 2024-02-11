@@ -10,17 +10,20 @@ class LogicState(rx.State):
     tablerows: List[tuple] = []
 
     def submit(self):
-        subs = Subformula.allvariables(self.formula)
-        self.tableheaders = subs.copy()
-        self.tableheaders.append("RESULT")
-        evaluationlist = evaluateformulas.EvaluateForm(self.formula)
-        self.tablerows.clear()
-        for modelvaluecombo in evaluationlist:
-            row = ()
-            for variable in subs:
-                row += ("True" if modelvaluecombo[0][variable] else "False",)
-            row += ("True" if modelvaluecombo[1] else "False",)
-            self.tablerows.append(row)
+        try:
+            subs = Subformula.allvariables(self.formula)
+            self.tableheaders = subs.copy()
+            self.tableheaders.append("RESULT")
+            evaluationlist = evaluateformulas.EvaluateForm(self.formula)
+            self.tablerows.clear()
+            for modelvaluecombo in evaluationlist:
+                row = ()
+                for variable in subs:
+                    row += ("True" if modelvaluecombo[0][variable] else "False",)
+                row += ("True" if modelvaluecombo[1] else "False",)
+                self.tablerows.append(row)
+        except ValueError as e:
+            return rx.window_alert(str(e))
 
 
 

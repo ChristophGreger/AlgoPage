@@ -85,7 +85,7 @@ def subformulas(form):
 
 
 # Funktion um alle unmittelbaren Subformulas zu finden (Nächste Ebene im Syntaxbaum). Funktion gibt auch das höchste
-# Element im Syntaxbaum zurück und dessen Position in der Formel
+# Element im Syntaxbaum zurück und dessen Position in der Formel (In der Version ohne unnötige Klammern)
 def directsubformulas(form):
     if form == "":
         return [], "e", 0
@@ -134,6 +134,8 @@ def directsubformulas(form):
             dirsubformulas.append(elminateuselessbraces(form[-i + 1:]))
             dirsubformulas.append(elminateuselessbraces(form[:-i]))
             return dirsubformulas, "&", i
+
+    raise ValueError("Formel ist nicht syntaktisch korrekt")
 
 
 # & ist das logische Und, | ist das logische Oder, > ist die logische Implikation, = ist die logische Äquivalenz und
