@@ -1,6 +1,5 @@
 from typing import List
 import reflex as rx
-import asyncio
 from AlgoPage.logicformulas import Subformula
 from AlgoPage.logicformulas import evaluateformulas
 
