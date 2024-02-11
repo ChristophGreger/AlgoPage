@@ -1,6 +1,6 @@
 # Algorithm Visualizer
 
-A visulization of different algorithms using Python and Reflex.
+A visualization of different algorithms using Python and Reflex.
 
 ## Segments
 
@@ -10,3 +10,7 @@ A visulization of different algorithms using Python and Reflex.
 
 - DFS
 - BFS
+
+## Logic Page
+
+Here it's possible to generate Truthtables from propositional logic formulas. 
