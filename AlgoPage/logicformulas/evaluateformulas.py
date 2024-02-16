@@ -71,24 +71,24 @@ def eliminatealluselessbracketshelper(form: str) -> str:
     toreturnright = ""
     toreturnleft = ""
 
-    # Rechtsassoziativer Fall
-    if element in {"&", "|"}:
-        if bindsstrongerthan(element, element2):
-            toreturnleft = "(" + eliminatealluselessbracketshelper(subs[0]) + ")"
-        else:
-            toreturnleft = eliminatealluselessbracketshelper(subs[0])
-        if bindsstrongerthan(element, element3, False):
-            toreturnright = "(" + eliminatealluselessbracketshelper(subs[1]) + ")"
-        else:
-            toreturnright = eliminatealluselessbracketshelper(subs[1])
-
-    # Linksassoziativer Fall
-    if element in {"=", ">"}:
+    # Linkssassoziativer Fall
+    if element in {"&", "|", "="}:
         if bindsstrongerthan(element, element2, False):
             toreturnleft = "(" + eliminatealluselessbracketshelper(subs[0]) + ")"
         else:
             toreturnleft = eliminatealluselessbracketshelper(subs[0])
-        if bindsstrongerthan(element, element3):
+        if bindsstrongerthan(element, element3, True):
+            toreturnright = "(" + eliminatealluselessbracketshelper(subs[1]) + ")"
+        else:
+            toreturnright = eliminatealluselessbracketshelper(subs[1])
+
+    # Rechtsassoziativer Fall
+    if element in {">"}:
+        if bindsstrongerthan(element, element2, True):
+            toreturnleft = "(" + eliminatealluselessbracketshelper(subs[0]) + ")"
+        else:
+            toreturnleft = eliminatealluselessbracketshelper(subs[0])
+        if bindsstrongerthan(element, element3, False):
             toreturnright = "(" + eliminatealluselessbracketshelper(subs[1]) + ")"
         else:
             toreturnright = eliminatealluselessbracketshelper(subs[1])
@@ -106,4 +106,14 @@ def bindsstrongerthan(element1: str, element2: str, leftchecking: bool = True) -
 
 if __name__ == "__main__":
     formula = "A&B|(C)>(A=B)"
+    print(eliminatealluselessbrackets(formula))
+    formula = "A=(B=C)"
+    print(eliminatealluselessbrackets(formula))
+    formula = "(A=B)=C"
+    print(eliminatealluselessbrackets(formula))
+    formula = "(A&B)&C"
+    print(eliminatealluselessbrackets(formula))
+    formula = "A&(B&C)"
+    print(eliminatealluselessbrackets(formula))
+    formula = "A>(B>C)"
     print(eliminatealluselessbrackets(formula))
