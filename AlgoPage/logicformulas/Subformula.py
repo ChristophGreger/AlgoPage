@@ -109,9 +109,9 @@ def directsubformulas(form):
 
     # Checken ob das oberste Element eine logische Äquivalenz ist. Äquivalenz wird RECHTSASSOZIATIV behandelt
     for i in range(len(form)):
-        if form[i] == "=" and correctbraces(form[i + 1:]):
-            dirsubformulas.append(elminateuselessbraces(form[:i]))
-            dirsubformulas.append(elminateuselessbraces(form[i + 1:]))
+        if form[-i] == "=" and correctbraces(form[-i + 1:]):
+            dirsubformulas.append(elminateuselessbraces(form[:-i]))
+            dirsubformulas.append(elminateuselessbraces(form[-i + 1:]))
             return dirsubformulas, "=", i
 
     # Checken ob das oberste Element eine logische Implikation ist
@@ -140,8 +140,7 @@ def directsubformulas(form):
 
 # & ist das logische Und, | ist das logische Oder, > ist die logische Implikation, = ist die logische Äquivalenz und
 # ! ist das logische Nicht
-# Variablen dürfen logischerweise kein logisches Zeichen oder Klammern beinhalten. Die
-# eingegebene Formel muss syntaktisch korrekt sein
+# Variablen dürfen logischerweise kein logisches Zeichen oder Klammern beinhalten.
 
 if __name__ == "__main__":
     while True:
