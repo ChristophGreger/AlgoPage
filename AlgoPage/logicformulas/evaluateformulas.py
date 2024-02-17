@@ -53,6 +53,14 @@ def eliminatealluselessbrackets(form: str) -> str:
     return eliminatealluselessbracketshelper(form)
 
 
+def correctsyntax(form: str) -> bool:
+    try:
+        evaluation = EvaluateForm(form)
+        return True
+    except:
+        return False
+
+
 def eliminatealluselessbracketshelper(form: str) -> str:
     subs, element, position = Subformula.directsubformulas(form)
 
