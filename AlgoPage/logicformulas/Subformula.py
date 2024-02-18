@@ -26,6 +26,7 @@ def isvariable(form):
 
 
 # Funktion um alle Variablen in einer Formel zu finden und diese als Liste, sortiert nach Position in der Formel, zurückzugeben
+# TODO Funktion jetzt überflüssig. Kann durch allunsortedVariables und allsortedVariables ersetzt werden
 def allvariables(form):
     variables = []
     for x in subformulas(form):
@@ -69,6 +70,7 @@ def elminateuselessbraces(form):
     return form
 
 
+# TODO Funktion überflüssig
 def subformulas(form):
     if len(form) == 0:
         return set()

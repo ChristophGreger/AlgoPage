@@ -6,6 +6,7 @@ from AlgoPage.logicformulas import Subformula
 # Ein Model für die Auswertung einer Formel ist ein Dictionary, das Variablen auf Wahrheitswerte abbildet
 
 
+# TODO Funktion überflüssig
 def getallModels(variables):
     if len(variables) == 0:
         return [{}]
@@ -15,6 +16,7 @@ def getallModels(variables):
                                                                       models]
 
 
+# TODO Funktion überflüssig
 def EvaluateForm(form: str) -> List[List[any]]:
     variables = Subformula.allvariables(form)
     models = getallModels(list(variables))
@@ -25,6 +27,7 @@ def EvaluateForm(form: str) -> List[List[any]]:
     return solutions
 
 
+# TODO Funktion überflüssig
 def evaluateformhelper(form, model) -> bool:
     subs, element, position = Subformula.directsubformulas(form)
     if element == "!" and len(subs) == 1:
@@ -43,6 +46,7 @@ def evaluateformhelper(form, model) -> bool:
         raise ValueError("Formel ist nicht korrekt")
 
 
+# TODO Funktion überflüssig
 # Funktion, die eine Formel in eine Form umwandelt, die überhaupt keine unnötigen Klammern enthält
 def eliminatealluselessbrackets(form: str) -> str:
     form = Subformula.elminateuselessbraces(form)
@@ -53,6 +57,7 @@ def eliminatealluselessbrackets(form: str) -> str:
     return eliminatealluselessbracketshelper(form)
 
 
+# TODO Funktion überflüssig
 def correctsyntax(form: str) -> bool:
     try:
         evaluation = EvaluateForm(form)
@@ -61,6 +66,7 @@ def correctsyntax(form: str) -> bool:
         return False
 
 
+# TODO Funktion überflüssig
 def eliminatealluselessbracketshelper(form: str) -> str:
     subs, element, position = Subformula.directsubformulas(form)
 
@@ -104,6 +110,7 @@ def eliminatealluselessbracketshelper(form: str) -> str:
     return toreturnleft + element + toreturnright
 
 
+# TODO Funktion überflüssig
 def bindsstrongerthan(element1: str, element2: str, leftchecking: bool = True) -> bool:
     operatorlist = ["v", "!", "&", "|", ">", "="]
     if leftchecking:
