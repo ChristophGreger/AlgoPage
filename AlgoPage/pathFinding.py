@@ -8,7 +8,8 @@ from .pathFindingState import PathFindingState, algorithms
 
 # General Button
 def abutton(row: int, col: int, color: str) -> rx.Component:
-    return rx.button("", bg=color, button=True, on_click=lambda: PathFindingState.setStartandEndandBarrier(row, col))
+    return rx.chakra.button("", bg=color, button=True,
+                            on_click=lambda: PathFindingState.setStartandEndandBarrier(row, col))
 
 
 # Making a colored Button out of the fieldmatrix
@@ -16,12 +17,8 @@ def mybutton(row: int, col: int) -> rx.Component:
     return abutton(row, col, PathFindingState.fieldmatrix[row][col])
 
 
-def generateButtonsasGridItems(row: int, col: int) -> rx.Component:
-    return rx.grid_item(mybutton(row, col), row=row, col=col)
-
-
 def allGridItems() -> rx.Component:
-    return rx.fragment(*[generateButtonsasGridItems(row, col) for row in range(0, 20) for col in range(0, 20)])
+    return rx.fragment(*[mybutton(row, col) for row in range(0, 20) for col in range(0, 20)])
 
 
 def presetButton(index: int) -> rx.Component:
@@ -34,8 +31,7 @@ def allPresetButtons() -> list[Component]:
 
 
 def pathFinding() -> rx.Component:
-    return rx.container(rx.grid(*[allGridItems()], template_rows="repeat(20, 1fr)",
-                                template_columns="repeat(20, 1fr)", gap=0),
+    return rx.container(rx.grid(*[allGridItems()], columns="20", spacing_x="0", spacing_y="0", width="80%"),
                         rx.button("Setze Startpunkt", on_click=PathFindingState.setcurrentlysetting("start"),
                                   color="green"),
                         rx.button("Setze Endpunkt", on_click=PathFindingState.setcurrentlysetting("end"), color="red"),
@@ -46,7 +42,7 @@ def pathFinding() -> rx.Component:
                         rx.button("Reset", on_click=PathFindingState.resetGrid()),
                         rx.button("Print Grid", on_click=PathFindingState.printGrid()),
                         *allPresetButtons(),
-                        rx.select(
+                        rx.chakra.select(
                             algorithms,
                             on_change=PathFindingState.set_algorithm,
                             color_schemes="twitter",

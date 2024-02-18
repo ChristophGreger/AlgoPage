@@ -25,21 +25,6 @@ def isvariable(form):
     return True
 
 
-# Funktion um alle Variablen in einer Formel zu finden und diese als Liste, sortiert nach Position in der Formel, zurückzugeben
-def allvariables(form):
-    variables = []
-    for x in subformulas(form):
-        if isvariable(x):
-            variables.append(x)
-    helper = []
-    for var in variables:
-        helper.append([var, form.index(var)])
-    helper.sort(key=lambda var2: var2[1])
-    for i in range(len(helper)):
-        variables[i] = helper[i][0]
-    return variables
-
-
 # Funktion um zu testen ob etwas eine Negation von etwas ist
 def isnegation(form):
     if form[0] == "!" and (uselessbraces(form[1:]) or isvariable(form[1:])):
@@ -67,21 +52,6 @@ def elminateuselessbraces(form):
     if uselessbraces(form):
         return form[1:-1]
     return form
-
-
-def subformulas(form):
-    if len(form) == 0:
-        return set()
-
-    # Entferne alle unnötigen Klammern (Aber nur die, die komplett aussenrum sind)
-    form = elminateuselessbraces(form)
-
-    toreturn = set()
-    toreturn.add(form)
-    for x in directsubformulas(form)[0]:
-        toreturn.add(x)
-        toreturn.update(subformulas(x))
-    return toreturn
 
 
 # Funktion um alle unmittelbaren Subformulas zu finden (Nächste Ebene im Syntaxbaum). Funktion gibt auch das höchste
