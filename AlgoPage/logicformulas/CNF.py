@@ -1,11 +1,12 @@
 from AlgoPage.logicformulas import Subformula
-from AlgoPage.logicformulas import evaluateformulas
 
 
+# TODO : Implement the function isCNF
 def isCNF(form: str, wasalreadydisj: bool = False) -> bool:
+    pass
     """Check if the given formula is in CNF."""
-    if not evaluateformulas.correctsyntax(form):
-        return False
+    #if not evaluateformulas.correctsyntax(form):
+    #    return False
     form = Subformula.elminateuselessbraces(form)
     if Subformula.isvariable(form):
         return True
