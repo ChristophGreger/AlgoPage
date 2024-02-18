@@ -3,7 +3,7 @@ from .sudokuState import SudokuState
 
 
 def cell(row: int, col: int) -> rx.Component:
-    return rx.number_input(
+    return rx.chakra.number_input(
         value=SudokuState.sudoku[row][col],
         on_change=lambda value: SudokuState.setNumber(row, col, value),
         width="5%",

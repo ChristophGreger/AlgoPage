@@ -6,7 +6,7 @@ def logic() -> rx.Component:
     return rx.fragment(
         rx.text("Input your formula: "),
         rx.hstack(
-            rx.input(
+            rx.chakra.input(
                 type="text",
                 value=LogicState.formula,
                 on_change=LogicState.set_formula,
@@ -19,8 +19,8 @@ def logic() -> rx.Component:
             rx.button("Preset 2", on_click=LogicState.setPreset(2)),
             rx.text("'>': Implikation, '=': Äquivalenz, '&': Konjunktion, '|': Disjunktion, '!': Negation"),
         ),
-        rx.table_container(
-            rx.table(
+        rx.chakra.table_container(
+            rx.chakra.table(
                 headers=LogicState.tableheaders,
                 rows=LogicState.tablerows,
                 variant="striped",

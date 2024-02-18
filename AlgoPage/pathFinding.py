@@ -8,7 +8,7 @@ from .pathFindingState import PathFindingState, algorithms
 
 # General Button
 def abutton(row: int, col: int, color: str) -> rx.Component:
-    return rx.button("", bg=color, button=True, on_click=lambda: PathFindingState.setStartandEndandBarrier(row, col))
+    return rx.chakra.button("", bg=color, button=True, on_click=lambda: PathFindingState.setStartandEndandBarrier(row, col))
 
 
 # Making a colored Button out of the fieldmatrix
@@ -17,7 +17,7 @@ def mybutton(row: int, col: int) -> rx.Component:
 
 
 def generateButtonsasGridItems(row: int, col: int) -> rx.Component:
-    return rx.grid_item(mybutton(row, col), row=row, col=col)
+    return rx.chakra.grid_item(mybutton(row, col), row=row, col=col)
 
 
 def allGridItems() -> rx.Component:
@@ -34,7 +34,7 @@ def allPresetButtons() -> list[Component]:
 
 
 def pathFinding() -> rx.Component:
-    return rx.container(rx.grid(*[allGridItems()], template_rows="repeat(20, 1fr)",
+    return rx.container(rx.chakra.grid(*[allGridItems()], template_rows="repeat(20, 1fr)",
                                 template_columns="repeat(20, 1fr)", gap=0),
                         rx.button("Setze Startpunkt", on_click=PathFindingState.setcurrentlysetting("start"),
                                   color="green"),
@@ -46,7 +46,7 @@ def pathFinding() -> rx.Component:
                         rx.button("Reset", on_click=PathFindingState.resetGrid()),
                         rx.button("Print Grid", on_click=PathFindingState.printGrid()),
                         *allPresetButtons(),
-                        rx.select(
+                        rx.chakra.select(
                             algorithms,
                             on_change=PathFindingState.set_algorithm,
                             color_schemes="twitter",
