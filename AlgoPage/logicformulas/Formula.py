@@ -45,8 +45,6 @@ class Formula:
     def getallModels(self, variables=None) -> list:
         """Returns all models of the formula."""
         if variables is None:
-            variables = []
-        else:
             variables = self.allsortedVariables()
         if len(variables) == 0:
             return [{}]
@@ -89,7 +87,7 @@ class Formula:
         else:
             return operatorlist.index(element1) < operatorlist.index(element2)
 
-    def eliminatealluselessbrackets(self) -> str:
+    def withoutuselessbraces(self) -> str:
         """Returns the formula in a form that contains no unnecessary brackets.
         Does this by constructing the formula out of its tree"""
         # Die beiden Fälle, in denen die Formel eine Variable oder ein unary Operator (Negation) ist
@@ -102,7 +100,7 @@ class Formula:
             if sub1.element == "v":
                 return "!" + sub1.formula_string
             else:
-                return "!(" + sub1.eliminatealluselessbrackets() + ")"
+                return "!(" + sub1.withoutuselessbraces() + ")"
 
         sub2 = self.direct_subformulas[1]
         toreturnright = ""
@@ -111,24 +109,24 @@ class Formula:
         # Linkssassoziativer Fall
         if self.element in {"&", "|", "="}:
             if self.bindsstrongerthan(self.element, sub1.element, False):
-                toreturnleft = "(" + sub1.eliminatealluselessbrackets() + ")"
+                toreturnleft = "(" + sub1.withoutuselessbraces() + ")"
             else:
-                toreturnleft = sub1.eliminatealluselessbrackets()
+                toreturnleft = sub1.withoutuselessbraces()
             if self.bindsstrongerthan(self.element, sub2.element, True):
-                toreturnright = "(" + sub2.eliminatealluselessbrackets() + ")"
+                toreturnright = "(" + sub2.withoutuselessbraces() + ")"
             else:
-                toreturnright = sub2.eliminatealluselessbrackets()
+                toreturnright = sub2.withoutuselessbraces()
 
         # Rechtsassoziativer Fall
         if self.element in {">"}:
             if self.bindsstrongerthan(self.element, sub1.element, True):
-                toreturnleft = "(" + sub1.eliminatealluselessbrackets() + ")"
+                toreturnleft = "(" + sub1.withoutuselessbraces() + ")"
             else:
-                toreturnleft = sub1.eliminatealluselessbrackets()
+                toreturnleft = sub1.withoutuselessbraces()
             if self.bindsstrongerthan(self.element, sub2.element, False):
-                toreturnright = "(" + sub2.eliminatealluselessbrackets() + ")"
+                toreturnright = "(" + sub2.withoutuselessbraces() + ")"
             else:
-                toreturnright = sub2.eliminatealluselessbrackets()
+                toreturnright = sub2.withoutuselessbraces()
 
         return toreturnleft + self.element + toreturnright
 
@@ -136,6 +134,8 @@ class Formula:
 if __name__ == "__main__":
     print(Formula("A&B|(C)>(A=B)").allsortedVariables())
     print(Formula("A&B|(C)>(A=B)").directsubformula_strings)
+    x = Formula("A&B|(C)>(A=B)")
+    print(x.evaluate())
 
 
 

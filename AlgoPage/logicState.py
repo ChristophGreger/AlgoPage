@@ -1,7 +1,6 @@
 from typing import List
 import reflex as rx
-from AlgoPage.logicformulas import Subformula
-from AlgoPage.logicformulas import evaluateformulas
+from AlgoPage.logicformulas import Formula
 
 
 class LogicState(rx.State):
@@ -12,15 +11,15 @@ class LogicState(rx.State):
 
     def submit(self):
         try:
-            self.bracketlessformula = evaluateformulas.eliminatealluselessbrackets(self.formula)
-            subs = Subformula.allvariables(self.formula)
-            self.tableheaders = subs.copy()
+            classedformula = Formula.Formula(self.formula)
+            self.bracketlessformula = classedformula.withoutuselessbraces()
+            self.tableheaders = classedformula.allsortedVariables()
             self.tableheaders.append("RESULT")
-            evaluationlist = evaluateformulas.EvaluateForm(self.formula)
+            evaluationlist = classedformula.evaluate()
             self.tablerows.clear()
             for modelvaluecombo in evaluationlist:
                 row = ()
-                for variable in subs:
+                for variable in classedformula.allsortedVariables():
                     row += ("True" if modelvaluecombo[0][variable] else "False",)
                 row += ("True" if modelvaluecombo[1] else "False",)
                 self.tablerows.append(row)
