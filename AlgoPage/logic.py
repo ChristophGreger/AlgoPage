@@ -35,7 +35,7 @@ def logic() -> rx.Component:
                     )
                 ),
                 rx.chakra.tab_panel(
-                    rx.chakra.text("Hier kommt der AST hin.")
+                    rx.chakra.text("Hier kommt der AST hin."),
                 ),
             ),
             bg="white",
@@ -43,3 +43,4 @@ def logic() -> rx.Component:
             shadow="lg",
         ),
     )
+

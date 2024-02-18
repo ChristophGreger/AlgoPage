@@ -32,6 +32,3 @@ class LogicState(rx.State):
         elif preset == 2:
             self.formula = "((var1|var2)&var3)=var4&var3|var1>var2"
         self.submit()
-
-
-
