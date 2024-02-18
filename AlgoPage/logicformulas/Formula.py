@@ -130,12 +130,38 @@ class Formula:
 
         return toreturnleft + self.element + toreturnright
 
+    def isCNF(self, wasalreadydisj: bool = False) -> bool:
+        """Check if the given formula is in CNF."""
+        if self.isvariable:
+            return True
+        if self.element == "!":
+            return self.direct_subformulas[0].isCNF()
+        if self.element not in {"&", "|"}:
+            return False
+        if self.element == "&":
+            if wasalreadydisj:
+                return False
+            return self.direct_subformulas[0].isCNF() and self.direct_subformulas[1].isCNF()
+        if self.element == "|":
+            return self.direct_subformulas[0].isCNF(True) and self.direct_subformulas[1].isCNF(True)
+
 
 if __name__ == "__main__":
     print(Formula("A&B|(C)>(A=B)").allsortedVariables())
     print(Formula("A&B|(C)>(A=B)").directsubformula_strings)
     x = Formula("A&B|(C)>(A=B)")
     print(x.evaluate())
+    print("Ab jetzt CNF Testing")
+    print(Formula("A&B").isCNF())
+    print(Formula("A|B").isCNF())
+    print(Formula("A").isCNF())
+    print(Formula("!A").isCNF())
+    print(Formula("A&B|C").isCNF())
+    print(Formula("A&B&C").isCNF())
+    print(Formula("A|B|C").isCNF())
+    print(Formula("A|B&C").isCNF())
+    print(Formula("A&(B|C)").isCNF())
+    print(Formula("A>B&C").isCNF())
 
 
 

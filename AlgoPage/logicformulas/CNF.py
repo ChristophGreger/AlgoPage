@@ -1,7 +1,6 @@
 from AlgoPage.logicformulas import Subformula
 
 
-# TODO : Implement the function isCNF
 def isCNF(form: str, wasalreadydisj: bool = False) -> bool:
     pass
     """Check if the given formula is in CNF."""
