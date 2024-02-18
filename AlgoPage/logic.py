@@ -19,11 +19,27 @@ def logic() -> rx.Component:
             rx.button("Preset 2", on_click=LogicState.setPreset(2)),
             rx.text("'>': Implikation, '=': Äquivalenz, '&': Konjunktion, '|': Disjunktion, '!': Negation"),
         ),
-        rx.chakra.table_container(
-            rx.chakra.table(
-                headers=LogicState.tableheaders,
-                rows=LogicState.tablerows,
-                variant="striped",
-            )
-        )
+        rx.chakra.tabs(
+            rx.chakra.tab_list(
+                rx.chakra.tab("Tabelle"),
+                rx.chakra.tab("Abstract Syntax Tree"),
+            ),
+            rx.chakra.tab_panels(
+                rx.chakra.tab_panel(
+                    rx.chakra.table_container(
+                        rx.chakra.table(
+                            headers=LogicState.tableheaders,
+                            rows=LogicState.tablerows,
+                            variant="striped",
+                        )
+                    )
+                ),
+                rx.chakra.tab_panel(
+                    rx.chakra.text("Hier kommt der AST hin.")
+                ),
+            ),
+            bg="white",
+            color="black",
+            shadow="lg",
+        ),
     )
