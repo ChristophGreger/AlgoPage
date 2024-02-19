@@ -8,3 +8,6 @@ class Tree(rx.Component):
     library = "react-d3-tree"
     tag = "Tree"
     data: rx.Var[List[Dict]]
+    orientation: str = "vertical"
+    pathFunc: str = "straight"
+    # nodeSize = {{x: 100, y: 100}}
