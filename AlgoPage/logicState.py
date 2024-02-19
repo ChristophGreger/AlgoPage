@@ -8,6 +8,8 @@ class LogicState(rx.State):
     tableheaders: List[str] = []
     tablerows: List[tuple] = []
     bracketlessformula: str = ""
+    astdictlist: List[dict] = []
+    astdictlistisfilled: bool = False
 
     def submit(self):
         try:
@@ -23,6 +25,8 @@ class LogicState(rx.State):
                     row += ("True" if modelvaluecombo[0][variable] else "False",)
                 row += ("True" if modelvaluecombo[1] else "False",)
                 self.tablerows.append(row)
+            self.astdictlist = classedformula.getASTdata()
+            self.astdictlistisfilled = True
         except Exception as e:
             return rx.window_alert(str(e))
 
@@ -32,6 +36,3 @@ class LogicState(rx.State):
         elif preset == 2:
             self.formula = "((var1|var2)&var3)=var4&var3|var1>var2"
         self.submit()
-
-
-

@@ -145,6 +145,16 @@ class Formula:
         if self.element == "|":
             return self.direct_subformulas[0].isCNF(True) and self.direct_subformulas[1].isCNF(True)
 
+    def getASTdata(self, recursiveCall: bool = False) -> dict or list[dict]:
+        """Returns the data of the AST of the formula in a dictionary."""
+        if self.isvariable:
+            return {"name": self.formula_string, "children": []} if recursiveCall else [{"name": self.formula_string, "children": []}]
+        else:
+            if recursiveCall:
+                return {"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True), self.direct_subformulas[1].getASTdata(True)]}
+            else:
+                return [{"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True), self.direct_subformulas[1].getASTdata(True)]}]
+
 
 if __name__ == "__main__":
     print(Formula("A&B|(C)>(A=B)").allsortedVariables())
