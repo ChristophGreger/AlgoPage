@@ -12,7 +12,6 @@ def logic() -> rx.Component:
                 value=LogicState.formula,
                 on_change=LogicState.set_formula,
             ),
-            rx.text("Formula without useless brackets: " + LogicState.bracketlessformula),
         ),
         rx.hstack(
             rx.button("Calculate Table", on_click=LogicState.submit),
@@ -24,6 +23,7 @@ def logic() -> rx.Component:
             rx.chakra.tab_list(
                 rx.chakra.tab("Tabelle"),
                 rx.chakra.tab("Abstract Syntax Tree"),
+                rx.chakra.tab("Further Information on the Formula"),
             ),
             rx.chakra.tab_panels(
                 rx.chakra.tab_panel(
@@ -44,6 +44,9 @@ def logic() -> rx.Component:
                                 rx.text("Du musst zuerst eine Formel eingeben und auf 'calculate Table' klicken!")),
                     ),
                     height=1000,
+                ),
+                rx.chakra.tab_panel(
+                    rx.text("Formula without useless brackets: " + LogicState.bracketlessformula),
                 ),
             ),
             bg="white",
