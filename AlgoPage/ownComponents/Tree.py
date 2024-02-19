@@ -10,4 +10,6 @@ class Tree(rx.Component):
     data: rx.Var[List[Dict]]
     orientation: str = "vertical"
     pathFunc: str = "straight"
-    # nodeSize = {{x: 100, y: 100}}
+    draggable: bool = True
+    zoomable: bool = False
+    translate: Dict = {"x": 500, "y": 50}

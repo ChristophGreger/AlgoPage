@@ -36,14 +36,14 @@ def logic() -> rx.Component:
                     )
                 ),
                 rx.chakra.tab_panel(
-                    rx.container(
+                    rx.fragment(
                         rx.cond(LogicState.astdictlistisfilled,
-                                rx.container(
-                                    Tree(data=LogicState.astdictlist, height=3000),
-                                    height=1000,
+                                rx.fragment(
+                                    Tree(data=LogicState.astdictlist, style={"height": "100%", "width": "100%", "margin": "auto"}),
                                 ),
                                 rx.text("Du musst zuerst eine Formel eingeben und auf 'calculate Table' klicken!")),
                     ),
+                    height=1000,
                 ),
             ),
             bg="white",
