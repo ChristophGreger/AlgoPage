@@ -8,6 +8,8 @@ class LogicState(rx.State):
     tableheaders: List[str] = []
     tablerows: List[tuple] = []
     bracketlessformula: str = ""
+    astdictlist: List[dict] = []
+    astdictlistisfilled: bool = False
 
     def submit(self):
         try:

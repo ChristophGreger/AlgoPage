@@ -1,5 +1,6 @@
 import reflex as rx
 from .logicState import LogicState
+from AlgoPage.ownComponents.Tree import Tree
 
 
 def logic() -> rx.Component:
@@ -35,7 +36,7 @@ def logic() -> rx.Component:
                     )
                 ),
                 rx.chakra.tab_panel(
-                    rx.chakra.text("Hier kommt eines Tages ein AST hin."),
+                    rx.cond(LogicState.astdictlistisfilled, Tree(data=LogicState.astdictlist), rx.text("Du musst zuerst eine Formel eingeben und auf 'calculate Table' klicken!")),
                 ),
             ),
             bg="white",
