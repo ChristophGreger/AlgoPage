@@ -165,6 +165,11 @@ class Formula:
         """Returns the data of the AST of the formula in a dictionary."""
         if self.isvariable:
             return {"name": self.formula_string, "children": []} if recursiveCall else [{"name": self.formula_string, "children": []}]
+        elif self.element == "!":
+            if recursiveCall:
+                return {"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True)]}
+            else:
+                return [{"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True)]}]
         else:
             if recursiveCall:
                 return {"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True), self.direct_subformulas[1].getASTdata(True)]}
