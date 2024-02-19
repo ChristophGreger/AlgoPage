@@ -17,6 +17,8 @@ class LogicState(rx.State):
     iscountersatisfiable: bool = False
 
     def submit(self):
+        if not self.formula:
+            return rx.window_alert("Please enter a formula.")
         try:
             classedformula = Formula.Formula(self.formula)
             self.bracketlessformula = classedformula.withoutuselessbraces()
