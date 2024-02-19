@@ -11,6 +11,11 @@ class LogicState(rx.State):
     astdictlist: List[dict] = []
     astdictlistisfilled: bool = False
 
+    issatisfiable: bool = False
+    isunsatisfiable: bool = False
+    isvalid: bool = False
+    iscountersatisfiable: bool = False
+
     def submit(self):
         try:
             classedformula = Formula.Formula(self.formula)
@@ -27,6 +32,12 @@ class LogicState(rx.State):
                 self.tablerows.append(row)
             self.astdictlist = classedformula.getASTdata()
             self.astdictlistisfilled = True
+
+            self.iscountersatisfiable = classedformula.iscountersatisfiable
+            self.issatisfiable = classedformula.issatisfiable
+            self.isunsatisfiable = classedformula.isunsatisfiable
+            self.isvalid = classedformula.isvalid
+
         except Exception as e:
             return rx.window_alert(str(e))
 

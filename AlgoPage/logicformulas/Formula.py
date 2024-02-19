@@ -21,6 +21,11 @@ class Formula:
         elif self.element in {"&", "|", ">", "="}:
             self.direct_subformulas = [Formula(x) for x in self.directsubformula_strings]
 
+        self.issatisfiable = False
+        self.isvalid = False
+        self.iscountersatisfiable = False
+        self.isunsatisfiable = False
+
     def __str__(self):
         return self.formula_string
 
@@ -57,9 +62,20 @@ class Formula:
         """Evaluates the formula for all models."""
         models = self.getallModels()
         solutions = []
+
         for model in models:
             value = self.evaluatehelper(model)
             solutions.append([model, value])
+            if value:
+                self.issatisfiable = True
+            else:
+                self.iscountersatisfiable = True
+
+        if not self.issatisfiable:
+            self.isunsatisfiable = True
+        if not self.iscountersatisfiable:
+            self.isvalid = True
+
         return solutions
 
     def evaluatehelper(self, model):

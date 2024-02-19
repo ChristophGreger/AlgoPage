@@ -46,7 +46,11 @@ def logic() -> rx.Component:
                     height=1000,
                 ),
                 rx.chakra.tab_panel(
-                    rx.text("Formula without useless brackets: " + LogicState.bracketlessformula),
+                    rx.text("Formula without useless brackets: " + LogicState.bracketlessformula.to_string()),
+                    rx.text("Formula is satisfiable: " + LogicState.issatisfiable.to_string()),
+                    rx.text("Formula is valid: " + LogicState.isvalid.to_string()),
+                    rx.text("Formula is countersatisfiable: " + LogicState.iscountersatisfiable.to_string()),
+                    rx.text("Formula is unsatisfiable: " + LogicState.isunsatisfiable.to_string()),
                 ),
             ),
             bg="white",
