@@ -16,6 +16,8 @@ class LogicState(rx.State):
     isvalid: bool = False
     iscountersatisfiable: bool = False
 
+    showsubformulas: bool = False
+
     def submit(self):
         if not self.formula:
             return rx.window_alert("Please enter a formula.")
@@ -23,13 +25,24 @@ class LogicState(rx.State):
             classedformula = Formula.Formula(self.formula)
             self.bracketlessformula = classedformula.withoutuselessbraces()
             self.tableheaders = classedformula.allsortedVariables()
-            self.tableheaders.append("RESULT")
-            evaluationlist = classedformula.evaluate()
+
+            if self.showsubformulas:
+                for subformula in classedformula.getstrictSubformulas_sorted():
+                    self.tableheaders.append(subformula.withoutuselessbraces())
+
+            self.tableheaders.append(classedformula.withoutuselessbraces())
+            evaluationlist = classedformula.evaluate(self.showsubformulas)
             self.tablerows.clear()
+
             for modelvaluecombo in evaluationlist:
                 row = ()
                 for variable in classedformula.allsortedVariables():
                     row += ("True" if modelvaluecombo[0][variable] else "False",)
+
+                if self.showsubformulas:
+                    for subformula in classedformula.getstrictSubformulas_sorted():
+                        row += ("True" if modelvaluecombo[0][subformula.withoutuselessbraces()] else "False",)
+
                 row += ("True" if modelvaluecombo[1] else "False",)
                 self.tablerows.append(row)
             self.astdictlist = classedformula.getASTdata()

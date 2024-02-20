@@ -17,6 +17,11 @@ def logic() -> rx.Component:
             rx.button("Calculate Table", on_click=LogicState.submit),
             rx.button("Preset 1", on_click=LogicState.setPreset(1)),
             rx.button("Preset 2", on_click=LogicState.setPreset(2)),
+            rx.checkbox(
+                "Show Subformulas in Table",
+                default_checked=False,
+                on_change=LogicState.set_showsubformulas,
+            ),
             rx.text("'>': Implikation, '=': Äquivalenz, '&': Konjunktion, '|': Disjunktion, '!': Negation"),
         ),
         rx.chakra.tabs(

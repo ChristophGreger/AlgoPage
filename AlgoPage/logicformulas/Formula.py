@@ -1,4 +1,5 @@
 from AlgoPage.logicformulas import Subformula
+from typing import Self
 
 
 class Formula:
@@ -25,6 +26,12 @@ class Formula:
         self.isvalid = False
         self.iscountersatisfiable = False
         self.isunsatisfiable = False
+
+    def __eq__(self, other):
+        return self.withoutuselessbraces() == other.withoutuselessbraces()
+
+    def __hash__(self):
+        return hash(self.withoutuselessbraces())
 
     def __str__(self):
         return self.formula_string
@@ -58,13 +65,18 @@ class Formula:
             return [{variables[0]: True, **model} for model in models] + [{variables[0]: False, **model} for model in
                                                                           models]
     
-    def evaluate(self) -> list[list[any]]:
+    def evaluate(self, showsubformulas: bool = False) -> list[list[any]]:
         """Evaluates the formula for all models."""
         models = self.getallModels()
         solutions = []
 
         for model in models:
             value = self.evaluatehelper(model)
+
+            if showsubformulas:
+                for subformula in self.getstrictSubformulas_sorted():
+                    model[subformula.withoutuselessbraces()] = subformula.evaluatehelper(model)
+
             solutions.append([model, value])
             if value:
                 self.issatisfiable = True
@@ -78,7 +90,7 @@ class Formula:
 
         return solutions
 
-    def evaluatehelper(self, model):
+    def evaluatehelper(self, model) -> bool:
         if self.element == "!" and len(self.direct_subformulas) == 1:
             return not self.direct_subformulas[0].evaluatehelper(model)
         elif self.element == "&" and len(self.direct_subformulas) == 2:
@@ -175,6 +187,29 @@ class Formula:
                 return {"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True), self.direct_subformulas[1].getASTdata(True)]}
             else:
                 return [{"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True), self.direct_subformulas[1].getASTdata(True)]}]
+
+    def getstrictSubformulas(self, recursivecall: bool = False) -> set[Self]:
+        """Returns all strict subformulas of the formula. Excluding the variables."""
+        if not self.isvariable:
+            if recursivecall:
+                return {self}.union(*[x.getstrictSubformulas(True) for x in self.direct_subformulas])
+            else:
+                return set().union(*[x.getstrictSubformulas(True) for x in self.direct_subformulas])
+        else:
+            return set()
+
+    def length(self) -> int:
+        """Returns the length of the formula."""
+        if self.isvariable:
+            return 1
+        else:
+            return 1 + sum([x.length() for x in self.direct_subformulas])
+
+    def getstrictSubformulas_sorted(self) -> list[Self]:
+        """Returns all strict subformulas of the formula in a sorted list. Excluding the variables."""
+        mylist = list(self.getstrictSubformulas())
+        mylist.sort(key=lambda xy: xy.length())
+        return mylist
 
 
 if __name__ == "__main__":
