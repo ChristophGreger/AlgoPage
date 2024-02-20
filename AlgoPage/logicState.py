@@ -18,6 +18,9 @@ class LogicState(rx.State):
 
     showsubformulas: bool = False
 
+    tableaudictlist: List[dict] = []
+    tableaudictlistisfilled: bool = False
+
     def submit(self):
         if not self.formula:
             return rx.window_alert("Please enter a formula.")

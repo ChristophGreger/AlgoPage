@@ -188,6 +188,10 @@ class Formula:
             else:
                 return [{"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True), self.direct_subformulas[1].getASTdata(True)]}]
 
+    def getTableaudata(self, recursiveCall: bool = False) -> dict or list[dict]:
+        """Returns the data of the Tableau of the formula in a dictionary."""
+        pass
+
     def getstrictSubformulas(self, recursivecall: bool = False) -> set[Self]:
         """Returns all strict subformulas of the formula. Excluding the variables."""
         if not self.isvariable:
@@ -210,6 +214,7 @@ class Formula:
         mylist = list(self.getstrictSubformulas())
         mylist.sort(key=lambda xy: xy.length())
         return mylist
+
 
 
 if __name__ == "__main__":
