@@ -1,21 +1,6 @@
 import React from "react";
 import Tree from "react-d3-tree";
 
-
-const debugData = [
-  {
-    name: "1",
-    children: [
-      {
-        name: "2"
-      },
-      {
-        name: "2"
-      }
-    ]
-  }
-];
-
 const containerStyles = {
   width: '100%',
   height: '100vh',
@@ -37,9 +22,12 @@ export class CenteredTree extends React.PureComponent {
     return (
       <div style={containerStyles} ref={tc => (this.treeContainer = tc)}>
         <Tree
-          data={debugData}
+          data={this.props.data}
           translate={this.state.translate}
-          orientation={'vertical'}
+          orientation={this.props.orientation}
+          pathFunc={this.props.pathFunc}
+          draggable={this.props.draggable}
+          zoomable={this.props.zoomable}
         />
       </div>
     );

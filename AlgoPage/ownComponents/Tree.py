@@ -8,4 +8,8 @@ class Tree(rx.Component):
     library = "../public/myComponent.js"
     tag = "CenteredTree"
     lib_dependencies: list[str] = ["react-d3-tree"]
-
+    data: rx.Var[List[Dict]]
+    orientation: str = "vertical"
+    pathFunc: str = "straight"
+    draggable: bool = True
+    zoomable: bool = False
