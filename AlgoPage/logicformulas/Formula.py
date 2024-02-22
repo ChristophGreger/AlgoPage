@@ -201,7 +201,8 @@ class Formula:
     # TODO: Äquivalenz implementieren, das fehlt noch, weil es etwas komplizierter ist
     # TODO: Farbe der Knoten implementieren, so dass man sieht, welcher Knoten mit was geschlossen wurde.
     # In andtodo sind einfach nur Formeln, in ortodo sind 2er tupel von Formeln.
-    def getTableauNode(self, alreadyintreeabove: Set = None, ortodo: Set = None, andtodo: Set = None):  # -> TableauTreeNode:
+    def getTableauNode(self, alreadyintreeabove: Set = None, ortodo: Set = None,
+                       andtodo: Set = None):  # -> TableauTreeNode:
         """Returns the data of the Tableau as the first TableauTreeNode of its Tree."""
 
         from AlgoPage.logicformulas import TableauTreeNode
@@ -244,7 +245,8 @@ class Formula:
 
         if len(andtodo) > 0:
             nextformula = andtodo.pop()
-            return TableauTreeNode.TableauTreeNode(self, nextNode=nextformula.getTableauNode(alreadyintreeabove, ortodo, andtodo))
+            return TableauTreeNode.TableauTreeNode(self, nextNode=nextformula.getTableauNode(alreadyintreeabove, ortodo,
+                                                                                             andtodo))
         elif len(ortodo) > 0:
             nextformula1, nextformula2 = ortodo.pop()
             newchildren = [
@@ -253,6 +255,15 @@ class Formula:
             return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
         else:
             return TableauTreeNode.TableauTreeNode(self)
+
+    def getTableaudata(self, recursiveCall: bool = False, node=None) -> dict or list[dict]:
+        if not recursiveCall:
+            node = self.getTableauNode()
+            mychildren = [self.getTableaudata(True, x) for x in node.children]
+            return [{"name": self.withoutuselessbraces(), "children": mychildren}]
+        else:
+            return {"name": node.formula.withoutuselessbraces(),
+                    "children": [self.getTableaudata(True, x) for x in node.children]}
 
     def getstrictSubformulas(self, recursivecall: bool = False) -> set[Self]:
         """Returns all strict subformulas of the formula. Excluding the variables."""
