@@ -9,7 +9,7 @@ const containerStyles = {
 const renderRectSvgNode = ({ nodeDatum, toggleNode }) => (
     <g color={nodeDatum.attributes?.color ? nodeDatum.attributes?.color : "black"}>
       <rect x="-18" y="-18" width="36" height="25" fill="white" strokeWidth="0"></rect>
-      <text fill="currentcolor" x="0" y="0" strokeWidth="0.5" stroke="currentcolor">
+      <text fill="currentcolor" x="0" y="0" strokeWidth="0.5" stroke="currentcolor" textAnchor="middle">
         {nodeDatum.name}
       </text>
     </g>

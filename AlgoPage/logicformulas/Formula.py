@@ -1,5 +1,7 @@
+import copy
+
 from AlgoPage.logicformulas import Subformula
-from typing import Self
+from typing import Self, Set
 
 
 class Formula:
@@ -27,6 +29,10 @@ class Formula:
         self.iscountersatisfiable = False
         self.isunsatisfiable = False
 
+    def negatedFormula(self) -> Self:
+        """Returns the negated formula."""
+        return Formula("!(" + self.withoutuselessbraces() + ")")
+
     def __eq__(self, other):
         return self.withoutuselessbraces() == other.withoutuselessbraces()
 
@@ -53,7 +59,7 @@ class Formula:
         for i in range(len(helper)):
             variables[i] = helper[i][0]
         return variables
-    
+
     def getallModels(self, variables=None) -> list:
         """Returns all models of the formula."""
         if variables is None:
@@ -64,7 +70,7 @@ class Formula:
             models = self.getallModels(variables[1:])
             return [{variables[0]: True, **model} for model in models] + [{variables[0]: False, **model} for model in
                                                                           models]
-    
+
     def evaluate(self, showsubformulas: bool = False) -> list[list[any]]:
         """Evaluates the formula for all models."""
         models = self.getallModels()
@@ -98,7 +104,8 @@ class Formula:
         elif self.element == "|" and len(self.direct_subformulas) == 2:
             return self.direct_subformulas[0].evaluatehelper(model) or self.direct_subformulas[1].evaluatehelper(model)
         elif self.element == ">" and len(self.direct_subformulas) == 2:
-            return not self.direct_subformulas[0].evaluatehelper(model) or self.direct_subformulas[1].evaluatehelper(model)
+            return not self.direct_subformulas[0].evaluatehelper(model) or self.direct_subformulas[1].evaluatehelper(
+                model)
         elif self.element == "=" and len(self.direct_subformulas) == 2:
             return self.direct_subformulas[0].evaluatehelper(model) == self.direct_subformulas[1].evaluatehelper(model)
         elif self.isvariable:
@@ -176,7 +183,8 @@ class Formula:
     def getASTdata(self, recursiveCall: bool = False) -> dict or list[dict]:
         """Returns the data of the AST of the formula in a dictionary."""
         if self.isvariable:
-            return {"name": self.formula_string, "children": []} if recursiveCall else [{"name": self.formula_string, "children": []}]
+            return {"name": self.withoutuselessbraces(), "children": []} if recursiveCall else [
+                {"name": self.formula_string, "children": []}]
         elif self.element == "!":
             if recursiveCall:
                 return {"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True)]}
@@ -184,14 +192,67 @@ class Formula:
                 return [{"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True)]}]
         else:
             if recursiveCall:
-                return {"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True), self.direct_subformulas[1].getASTdata(True)]}
+                return {"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True),
+                                                           self.direct_subformulas[1].getASTdata(True)]}
             else:
-                return [{"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True), self.direct_subformulas[1].getASTdata(True)]}]
+                return [{"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True),
+                                                            self.direct_subformulas[1].getASTdata(True)]}]
 
-    # TODO: Implement Tableau Calculus
-    def getTableaudata(self, recursiveCall: bool = False) -> dict or list[dict]:
-        """Returns the data of the Tableau of the formula in a dictionary."""
-        pass
+    # TODO: Äquivalenz implementieren, das fehlt noch, weil es etwas komplizierter ist
+    # TODO: Farbe der Knoten implementieren, so dass man sieht, welcher Knoten mit was geschlossen wurde.
+    # In andtodo sind einfach nur Formeln, in ortodo sind 2er tupel von Formeln.
+    def getTableauNode(self, alreadyintreeabove: Set = None, ortodo: Set = None, andtodo: Set = None):  # -> TableauTreeNode:
+        """Returns the data of the Tableau as the first TableauTreeNode of its Tree."""
+
+        from AlgoPage.logicformulas import TableauTreeNode
+
+        if alreadyintreeabove is None:
+            alreadyintreeabove = set()
+        if ortodo is None:
+            ortodo = set()
+        if andtodo is None:
+            andtodo = set()
+
+        # Der Fall, dass der Tableau Zweig geschlossen werden kann
+        if self.negatedFormula() in alreadyintreeabove:
+            return TableauTreeNode.TableauTreeNode(self)
+
+        # Jetzt kommen alle anderen Fälle
+        alreadyintreeabove.add(self)
+
+        # Hier passieren jetzt alle Tableau Proof Rules
+        if self.element == "&":
+            andtodo.add(self.direct_subformulas[0])
+            andtodo.add(self.direct_subformulas[1])
+        if self.element == "|":
+            ortodo.add((self.direct_subformulas[0], self.direct_subformulas[1]))
+        if self.element == ">":
+            ortodo.add((self.direct_subformulas[0].negatedFormula(), self.direct_subformulas[1]))
+        if self.element == "!":
+            onlysubform = self.direct_subformulas[0]
+            if onlysubform.element == "!":
+                andtodo.add(onlysubform.direct_subformulas[0])
+            elif onlysubform.element == "&":
+                ortodo.add((onlysubform.direct_subformulas[0].negatedFormula(),
+                            onlysubform.direct_subformulas[1].negatedFormula()))
+            elif onlysubform.element == "|":
+                andtodo.add(onlysubform.direct_subformulas[0].negatedFormula())
+                andtodo.add(onlysubform.direct_subformulas[1].negatedFormula())
+            elif onlysubform.element == ">":
+                andtodo.add(onlysubform.direct_subformulas[0])
+                andtodo.add(onlysubform.direct_subformulas[1].negatedFormula())
+
+        if len(andtodo) > 0:
+            nextformula = andtodo.pop()
+            return TableauTreeNode.TableauTreeNode(self, nextNode=nextformula.getTableauNode(alreadyintreeabove, ortodo, andtodo))
+        elif len(ortodo) > 0:
+            nextformula1, nextformula2 = ortodo.pop()
+            newchildren = [
+                nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None),
+                nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None)]
+            return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
+        else:
+            return TableauTreeNode.TableauTreeNode(self)
 
     def getstrictSubformulas(self, recursivecall: bool = False) -> set[Self]:
         """Returns all strict subformulas of the formula. Excluding the variables."""
@@ -218,23 +279,21 @@ class Formula:
 
 
 if __name__ == "__main__":
-    print(Formula("A&B|(C)>(A=B)").allsortedVariables())
-    print(Formula("A&B|(C)>(A=B)").directsubformula_strings)
-    x = Formula("A&B|(C)>(A=B)")
-    print(x.evaluate())
-    print("Ab jetzt CNF Testing")
-    print(Formula("A&B").isCNF())
-    print(Formula("A|B").isCNF())
-    print(Formula("A").isCNF())
-    print(Formula("!A").isCNF())
-    print(Formula("A&B|C").isCNF())
-    print(Formula("A&B&C").isCNF())
-    print(Formula("A|B|C").isCNF())
-    print(Formula("A|B&C").isCNF())
-    print(Formula("A&(B|C)").isCNF())
-    print(Formula("A>B&C").isCNF())
-
-
-
-
-
+    testinga = False
+    if testinga:
+        print(Formula("A&B|(C)>(A=B)").allsortedVariables())
+        print(Formula("A&B|(C)>(A=B)").directsubformula_strings)
+        x = Formula("A&B|(C)>(A=B)")
+        print(x.evaluate())
+        print("Ab jetzt CNF Testing")
+        print(Formula("A&B").isCNF())
+        print(Formula("A|B").isCNF())
+        print(Formula("A").isCNF())
+        print(Formula("!A").isCNF())
+        print(Formula("A&B|C").isCNF())
+        print(Formula("A&B&C").isCNF())
+        print(Formula("A|B|C").isCNF())
+        print(Formula("A|B&C").isCNF())
+        print(Formula("A&(B|C)").isCNF())
+        print(Formula("A>B&C").isCNF())
+    Formula("(A|B)&B").getTableauNode().print()
