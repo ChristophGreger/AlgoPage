@@ -22,8 +22,8 @@ def logic() -> rx.Component:
                 default_checked=False,
                 on_change=LogicState.set_showsubformulas,
             ),
-            rx.text("'>': Implikation, '=': Äquivalenz, '&': Konjunktion, '|': Disjunktion, '!': Negation"),
         ),
+        rx.text("'>': Implikation, '=': Äquivalenz, '&': Konjunktion, '|': Disjunktion, '!': Negation"),
         rx.chakra.tabs(
             rx.chakra.tab_list(
                 rx.chakra.tab("Tabelle"),

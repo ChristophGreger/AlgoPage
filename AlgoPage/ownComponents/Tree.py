@@ -12,4 +12,4 @@ class Tree(rx.Component):
     orientation: str = "vertical"
     pathFunc: str = "straight"
     draggable: bool = True
-    zoomable: bool = False
+    zoomable: bool = True
