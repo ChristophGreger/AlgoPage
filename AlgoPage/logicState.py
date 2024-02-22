@@ -51,6 +51,9 @@ class LogicState(rx.State):
             self.astdictlist = classedformula.getASTdata()
             self.astdictlistisfilled = True
 
+            self.tableaudictlist = classedformula.getTableaudata()
+            self.tableaudictlistisfilled = True
+
             self.iscountersatisfiable = classedformula.iscountersatisfiable
             self.issatisfiable = classedformula.issatisfiable
             self.isunsatisfiable = classedformula.isunsatisfiable

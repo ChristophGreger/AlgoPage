@@ -53,9 +53,9 @@ def logic() -> rx.Component:
                 ),
                 rx.chakra.tab_panel(
                     rx.fragment(
-                        rx.cond(LogicState.astdictlistisfilled,
+                        rx.cond(LogicState.tableaudictlistisfilled,
                                 rx.fragment(
-                                    Tree(data=LogicState.astdictlist,
+                                    Tree(data=LogicState.tableaudictlist,
                                          style={"height": "100%", "width": "100%", "margin": "auto"}),
                                 ),
                                 rx.text("Du musst zuerst eine Formel eingeben und auf 'calculate Table' klicken!")),
