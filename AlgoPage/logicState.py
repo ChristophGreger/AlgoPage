@@ -18,6 +18,9 @@ class LogicState(rx.State):
 
     showsubformulas: bool = False
 
+    tableaudictlist: List[dict] = []
+    tableaudictlistisfilled: bool = False
+
     def submit(self):
         if not self.formula:
             return rx.window_alert("Please enter a formula.")
@@ -47,6 +50,9 @@ class LogicState(rx.State):
                 self.tablerows.append(row)
             self.astdictlist = classedformula.getASTdata()
             self.astdictlistisfilled = True
+
+            self.tableaudictlist = classedformula.getTableaudata()
+            self.tableaudictlistisfilled = True
 
             self.iscountersatisfiable = classedformula.iscountersatisfiable
             self.issatisfiable = classedformula.issatisfiable
