@@ -201,7 +201,6 @@ class Formula:
                 return [{"name": self.element, "children": [self.direct_subformulas[0].getASTdata(True),
                                                             self.direct_subformulas[1].getASTdata(True)]}]
 
-    # TODO: Äquivalenz implementieren, das fehlt noch, weil es etwas komplizierter ist
     # TODO: implement False and True als Variablen und somit dann auch als Knoten mit eigenen Regeln
     # In andtodo sind einfach nur Formeln, in ortodo sind 2er tupel von Formeln.
     def getTableauNode(self, alreadyintreeabove: Set = None, ortodo: List = None,
