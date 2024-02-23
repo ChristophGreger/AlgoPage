@@ -1,7 +1,7 @@
 import copy
 
 from AlgoPage.logicformulas import Subformula
-from typing import Self, Set
+from typing import Self, Set, List
 
 
 class Formula:
@@ -200,9 +200,10 @@ class Formula:
 
     # TODO: Äquivalenz implementieren, das fehlt noch, weil es etwas komplizierter ist
     # TODO: Farbe der Knoten implementieren, so dass man sieht, welcher Knoten mit was geschlossen wurde.
+    # TODO: implement False and True als Variablen und somit dann auch als Knoten mit eigenen Regeln
     # In andtodo sind einfach nur Formeln, in ortodo sind 2er tupel von Formeln.
-    def getTableauNode(self, alreadyintreeabove: Set = None, ortodo: Set = None,
-                       andtodo: Set = None):  # -> TableauTreeNode:
+    def getTableauNode(self, alreadyintreeabove: Set = None, ortodo: List = None,
+                       andtodo: List = None):  # -> TableauTreeNode:
         """Returns the data of the Tableau as the first TableauTreeNode of its Tree."""
 
         from AlgoPage.logicformulas import TableauTreeNode
@@ -210,9 +211,9 @@ class Formula:
         if alreadyintreeabove is None:
             alreadyintreeabove = set()
         if ortodo is None:
-            ortodo = set()
+            ortodo = []
         if andtodo is None:
-            andtodo = set()
+            andtodo = []
 
         # Der Fall, dass der Tableau Zweig geschlossen werden kann
         if self.negatedFormula() in alreadyintreeabove:
@@ -223,32 +224,32 @@ class Formula:
 
         # Hier passieren jetzt alle Tableau Proof Rules
         if self.element == "&":
-            andtodo.add(self.direct_subformulas[0])
-            andtodo.add(self.direct_subformulas[1])
+            andtodo.append(self.direct_subformulas[0])
+            andtodo.append(self.direct_subformulas[1])
         if self.element == "|":
-            ortodo.add((self.direct_subformulas[0], self.direct_subformulas[1]))
+            ortodo.append((self.direct_subformulas[0], self.direct_subformulas[1]))
         if self.element == ">":
-            ortodo.add((self.direct_subformulas[0].negatedFormula(), self.direct_subformulas[1]))
+            ortodo.append((self.direct_subformulas[0].negatedFormula(), self.direct_subformulas[1]))
         if self.element == "!":
             onlysubform = self.direct_subformulas[0]
             if onlysubform.element == "!":
-                andtodo.add(onlysubform.direct_subformulas[0])
+                andtodo.append(onlysubform.direct_subformulas[0])
             elif onlysubform.element == "&":
-                ortodo.add((onlysubform.direct_subformulas[0].negatedFormula(),
-                            onlysubform.direct_subformulas[1].negatedFormula()))
+                ortodo.append((onlysubform.direct_subformulas[0].negatedFormula(),
+                               onlysubform.direct_subformulas[1].negatedFormula()))
             elif onlysubform.element == "|":
-                andtodo.add(onlysubform.direct_subformulas[0].negatedFormula())
-                andtodo.add(onlysubform.direct_subformulas[1].negatedFormula())
+                andtodo.append(onlysubform.direct_subformulas[0].negatedFormula())
+                andtodo.append(onlysubform.direct_subformulas[1].negatedFormula())
             elif onlysubform.element == ">":
-                andtodo.add(onlysubform.direct_subformulas[0])
-                andtodo.add(onlysubform.direct_subformulas[1].negatedFormula())
+                andtodo.append(onlysubform.direct_subformulas[0])
+                andtodo.append(onlysubform.direct_subformulas[1].negatedFormula())
 
         if len(andtodo) > 0:
-            nextformula = andtodo.pop()
+            nextformula = andtodo.pop(0)
             return TableauTreeNode.TableauTreeNode(self, nextNode=nextformula.getTableauNode(alreadyintreeabove, ortodo,
                                                                                              andtodo))
         elif len(ortodo) > 0:
-            nextformula1, nextformula2 = ortodo.pop()
+            nextformula1, nextformula2 = ortodo.pop(0)
             newchildren = [
                 nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None),
                 nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None)]
