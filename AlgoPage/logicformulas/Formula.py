@@ -2,6 +2,7 @@ import copy
 
 from AlgoPage.logicformulas import Subformula
 from typing import Self, Set, List
+from AlgoPage.logicformulas import Colors
 
 
 class Formula:
@@ -28,6 +29,8 @@ class Formula:
         self.isvalid = False
         self.iscountersatisfiable = False
         self.isunsatisfiable = False
+
+        self.color = "black"
 
     def negatedFormula(self) -> Self:
         """Returns the negated formula."""
@@ -203,9 +206,13 @@ class Formula:
     # TODO: implement False and True als Variablen und somit dann auch als Knoten mit eigenen Regeln
     # In andtodo sind einfach nur Formeln, in ortodo sind 2er tupel von Formeln.
     def getTableauNode(self, alreadyintreeabove: Set = None, ortodo: List = None,
-                       andtodo: List = None):  # -> TableauTreeNode:
+                       andtodo: List = None, alreadyusedcolors: Set = None):  # -> TableauTreeNode:
         """Returns the data of the Tableau as the first TableauTreeNode of its Tree."""
 
+        if alreadyusedcolors is None:
+            alreadyusedcolors = []
+
+        # Import hier, um Circular Import zu vermeiden
         from AlgoPage.logicformulas import TableauTreeNode
 
         if alreadyintreeabove is None:
@@ -216,8 +223,16 @@ class Formula:
             andtodo = []
 
         # Der Fall, dass der Tableau Zweig geschlossen werden kann
-        if self.negatedFormula() in alreadyintreeabove:
-            return TableauTreeNode.TableauTreeNode(self)
+        for x in alreadyintreeabove:
+            if x.negatedFormula() == self or x == self.negatedFormula():
+                if x.color == "black":
+                    newcolor = Colors.getColor(alreadyusedcolors)
+                    x.color = newcolor
+                    self.color = newcolor
+                    alreadyusedcolors.append(newcolor)
+                else:
+                    self.color = x.color
+                return TableauTreeNode.TableauTreeNode(self)
 
         # Jetzt kommen alle anderen Fälle
         alreadyintreeabove.add(self)
@@ -247,12 +262,12 @@ class Formula:
         if len(andtodo) > 0:
             nextformula = andtodo.pop(0)
             return TableauTreeNode.TableauTreeNode(self, nextNode=nextformula.getTableauNode(alreadyintreeabove, ortodo,
-                                                                                             andtodo))
+                                                                                             andtodo, alreadyusedcolors))
         elif len(ortodo) > 0:
             nextformula1, nextformula2 = ortodo.pop(0)
             newchildren = [
-                nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None),
-                nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None)]
+                nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors),
+                nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors)]
             return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
         else:
             return TableauTreeNode.TableauTreeNode(self)
@@ -261,9 +276,9 @@ class Formula:
         if not recursiveCall:
             node = self.getTableauNode()
             mychildren = [self.getTableaudata(True, x) for x in node.children]
-            return [{"name": self.withoutuselessbraces(), "children": mychildren}]
+            return [{"name": self.withoutuselessbraces(), "attributes": {"color": node.formula.color}, "children": mychildren}]
         else:
-            return {"name": node.formula.withoutuselessbraces(),
+            return {"name": node.formula.withoutuselessbraces(), "attributes": {"color": node.formula.color},
                     "children": [self.getTableaudata(True, x) for x in node.children]}
 
     def getstrictSubformulas(self, recursivecall: bool = False) -> set[Self]:

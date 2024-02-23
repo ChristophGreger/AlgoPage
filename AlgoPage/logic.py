@@ -17,6 +17,7 @@ def logic() -> rx.Component:
             rx.button("Calculate Table", on_click=LogicState.submit),
             rx.button("Preset 1", on_click=LogicState.setPreset(1)),
             rx.button("Preset 2", on_click=LogicState.setPreset(2)),
+            rx.button("Preset 3", on_click=LogicState.setPreset(3)),
             rx.checkbox(
                 "Show Subformulas in Table",
                 default_checked=False,
