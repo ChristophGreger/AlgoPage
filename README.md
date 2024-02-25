@@ -13,4 +13,7 @@ A visualization of different algorithms using Python and Reflex.
 
 ## Logic Page
 
-Here it's possible to generate Truthtables from propositional logic formulas. 
+Here it's possible to generate Truthtables from propositional logic formulas. Besides that: 
+- Generate AST
+- Generate Tableau Proof
+- Further Information on the formula
