@@ -20,6 +20,8 @@ class Formula:
             self.isvariable = True
         else:
             self.isvariable = False
+        if self.element == "p":
+            self.direct_subformulas = []
         if self.element == "!":
             self.direct_subformulas = [Formula(self.directsubformula_strings[0])]
         elif self.element in {"&", "|", ">", "="}:
@@ -96,7 +98,6 @@ class Formula:
             self.isunsatisfiable = True
         if not self.iscountersatisfiable:
             self.isvalid = True
-
         return solutions
 
     def evaluatehelper(self, model) -> bool:
@@ -113,13 +114,18 @@ class Formula:
             return self.direct_subformulas[0].evaluatehelper(model) == self.direct_subformulas[1].evaluatehelper(model)
         elif self.isvariable:
             return model[self.formula_string]
+        elif self.element == "p":
+            if Subformula.elminateuselessbraces(self.formula_string).upper() == "TRUE":
+                return True
+            elif Subformula.elminateuselessbraces(self.formula_string).upper() == "FALSE":
+                return False
         else:
             # This case should never happen
             raise ValueError("Formel ist nicht korrekt")
 
     @staticmethod
     def bindsstrongerthan(element1: str, element2: str, leftchecking: bool = True) -> bool:
-        operatorlist = ["v", "!", "&", "|", ">", "="]
+        operatorlist = ["p", "v", "!", "&", "|", ">", "="]
         if leftchecking:
             return operatorlist.index(element1) <= operatorlist.index(element2)
         else:
@@ -131,6 +137,11 @@ class Formula:
         # Die beiden Fälle, in denen die Formel eine Variable oder ein unary Operator (Negation) ist
         if self.element == "v":
             return self.formula_string
+
+        if self.element == "p":
+            if Subformula.elminateuselessbraces(self.formula_string.upper()) == "TRUE":
+                return "True"
+            return "False"
 
         sub1 = self.direct_subformulas[0]
 
@@ -170,7 +181,7 @@ class Formula:
 
     def isCNF(self, wasalreadydisj: bool = False) -> bool:
         """Check if the given formula is in CNF."""
-        if self.isvariable:
+        if self.isvariable or self.element == "p":
             return True
         if self.element == "!":
             return self.direct_subformulas[0].isCNF()
@@ -185,7 +196,7 @@ class Formula:
 
     def getASTdata(self, recursiveCall: bool = False) -> dict or list[dict]:
         """Returns the data of the AST of the formula in a dictionary."""
-        if self.isvariable:
+        if self.isvariable or self.element == "p":
             return {"name": self.withoutuselessbraces(), "children": []} if recursiveCall else [
                 {"name": self.formula_string, "children": []}]
         elif self.element == "!":
@@ -220,6 +231,28 @@ class Formula:
         if andtodo is None:
             andtodo = []
 
+        # Der Fall, dass der Tableau Zweig geschlossen werden kann, weil !True oder False die Formel ist.
+        if self.element == "p":
+            if self.withoutuselessbraces() == "False":
+                self.color = "red"
+                if len(andtodo) % 2 == 0:
+                    return TableauTreeNode.TableauTreeNode(self)
+                # Fall dass ein andtodo muss noch zwingend bearbeitet werden muss
+                elif len(andtodo) % 2 == 1:
+                    nextformula = andtodo.pop(0)
+                    return TableauTreeNode.TableauTreeNode(self, nextNode=TableauTreeNode.TableauTreeNode(nextformula))
+        if self.element == "!":
+            if self.direct_subformulas[0].element == "p":
+                if self.direct_subformulas[0].withoutuselessbraces() == "True":
+                    self.color = "red"
+                    if len(andtodo) % 2 == 0:
+                        return TableauTreeNode.TableauTreeNode(self)
+                    # Fall dass ein andtodo muss noch zwingend bearbeitet werden muss
+                    elif len(andtodo) % 2 == 1:
+                        nextformula = andtodo.pop(0)
+                        return TableauTreeNode.TableauTreeNode(self,
+                                                               nextNode=TableauTreeNode.TableauTreeNode(nextformula))
+
         # Der Fall, dass der Tableau Zweig geschlossen werden kann
         for x in alreadyintreeabove:
             if x.negatedFormula() == self or x == self.negatedFormula():
@@ -230,7 +263,6 @@ class Formula:
                     alreadyusedcolors.append(newcolor)
                 else:
                     self.color = x.color
-                finished = True
                 if len(andtodo) % 2 == 0:
                     return TableauTreeNode.TableauTreeNode(self)
                 # Fall dass ein andtodo muss noch zwingend bearbeitet werden muss
@@ -281,8 +313,10 @@ class Formula:
                 nextformula1 = nextform[0]
                 nextformula2 = nextform[1]
                 newchildren = [
-                    nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors),
-                    nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors)
+                    nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None,
+                                                alreadyusedcolors),
+                    nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None,
+                                                alreadyusedcolors)
                 ]
                 return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
             else:
@@ -290,11 +324,13 @@ class Formula:
                 nextformula2 = nextform[1]
                 nextformula3 = nextform[2]
                 nextformula4 = nextform[3]
-                firstandtodo = [nextformula2,]
-                secondandtodo = [nextformula4,]
+                firstandtodo = [nextformula2, ]
+                secondandtodo = [nextformula4, ]
                 newchildren = [
-                    nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), firstandtodo, alreadyusedcolors),
-                    nextformula3.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), secondandtodo, alreadyusedcolors)
+                    nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), firstandtodo,
+                                                alreadyusedcolors),
+                    nextformula3.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), secondandtodo,
+                                                alreadyusedcolors)
                 ]
                 return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
         else:
@@ -312,7 +348,7 @@ class Formula:
 
     def getstrictSubformulas(self, recursivecall: bool = False) -> set[Self]:
         """Returns all strict subformulas of the formula. Excluding the variables."""
-        if not self.isvariable:
+        if not self.isvariable or self.element == "p":
             if recursivecall:
                 return {self}.union(*[x.getstrictSubformulas(True) for x in self.direct_subformulas])
             else:
@@ -322,7 +358,7 @@ class Formula:
 
     def __len__(self) -> int:
         """Returns the length of the formula."""
-        if self.isvariable:
+        if self.isvariable or self.element == "p":
             return 1
         else:
             return 1 + sum([len(x) for x in self.direct_subformulas])

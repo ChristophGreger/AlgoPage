@@ -1,6 +1,6 @@
 # Funktion zum Feststellen, ob die formula ein Ausdruck ist, der komplett von Klammern umschlossen ist
 def uselessbraces(form):
-    if isvariable(form):
+    if isvariable_or_primitive(form):
         return False
     if form[0] == "(" and form[-1] == ")":
         numberofopening = 0
@@ -19,15 +19,32 @@ def uselessbraces(form):
 
 # Funktion zum testen ob etwas nur eine Variable ist
 def isvariable(form):
+    if isvariable_or_primitive(form):
+        if form.upper() == "TRUE" or form.upper() == "FALSE":
+            return False
+        return True
+    return False
+
+
+def isvariable_or_primitive(form):
     for x in form:
         if x in {"|", "&", "!", "(", ")", ">", "="}:
             return False
     return True
 
 
+# Funktion um zu testen ob etwas nur ein Primitiv ist, also entweder TRUE oder FALSE
+def isprimitive(form):
+    if isvariable_or_primitive(form):
+        if form.upper() == "TRUE" or form.upper() == "FALSE":
+            return True
+        return False
+    return False
+
+
 # Funktion um zu testen ob etwas eine Negation von etwas ist
 def isnegation(form):
-    if form[0] == "!" and (uselessbraces(form[1:]) or isvariable(form[1:])):
+    if form[0] == "!" and (uselessbraces(form[1:]) or isvariable_or_primitive(form[1:])):
         return True
     return False
 
@@ -69,6 +86,10 @@ def directsubformulas(form):
     # Checken ob form einfach nur eine einzige Variable ist
     if isvariable(form):
         return [], "v", 0
+
+    # Checken ob form einfach nur ein einziges Primitiv ist
+    if isprimitive(form):
+        return [], "p", 0
 
     # Nun muss man das oberste Element im Syntaxbaum finden
 
