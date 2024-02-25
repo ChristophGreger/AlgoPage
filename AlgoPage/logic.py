@@ -54,7 +54,6 @@ def logic() -> rx.Component:
                 ),
                 rx.chakra.tab_panel(
                     rx.fragment(
-                        rx.text("Der Tableau Calculus funktioniert nicht, wenn die Formel '=' enthält!"),
                         rx.cond(LogicState.tableaudictlistisfilled,
                                 rx.fragment(
                                     Tree(data=LogicState.tableaudictlist,

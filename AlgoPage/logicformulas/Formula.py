@@ -202,10 +202,9 @@ class Formula:
                                                             self.direct_subformulas[1].getASTdata(True)]}]
 
     # TODO: implement False and True als Variablen und somit dann auch als Knoten mit eigenen Regeln
-    # In andtodo sind einfach nur Formeln, in ortodo sind 2er tupel von Formeln.
+    # In andtodo sind einfach nur Formeln, in ortodo sind 2er tupel von Formeln, oder 4er tuple (der Fall dass die Formel eine Äquivalenz enthält.
     def getTableauNode(self, alreadyintreeabove: Set = None, ortodo: List = None,
-                       andtodo: List = None, alreadyusedcolors: Set = None,
-                       finished: bool = False):  # -> TableauTreeNode:
+                       andtodo: List = None, alreadyusedcolors: Set = None):  # -> TableauTreeNode:
         """Returns the data of the Tableau as the first TableauTreeNode of its Tree."""
 
         if alreadyusedcolors is None:
@@ -221,18 +220,6 @@ class Formula:
         if andtodo is None:
             andtodo = []
 
-        # Der Fall, dass der Zweig geschlossen ist, aber noch ands ausstehen
-        if finished:
-            if len(andtodo) > 0:
-                nextformula = andtodo.pop(0)
-                return TableauTreeNode.TableauTreeNode(self, nextNode=nextformula.getTableauNode(alreadyintreeabove,
-                                                                                                 ortodo,
-                                                                                                 andtodo,
-                                                                                                 alreadyusedcolors,
-                                                                                                 finished))
-            else:
-                return TableauTreeNode.TableauTreeNode(self)
-
         # Der Fall, dass der Tableau Zweig geschlossen werden kann
         for x in alreadyintreeabove:
             if x.negatedFormula() == self or x == self.negatedFormula():
@@ -246,12 +233,10 @@ class Formula:
                 finished = True
                 if len(andtodo) % 2 == 0:
                     return TableauTreeNode.TableauTreeNode(self)
+                # Fall dass ein andtodo muss noch zwingend bearbeitet werden muss
                 elif len(andtodo) % 2 == 1:
                     nextformula = andtodo.pop(0)
-                    return TableauTreeNode.TableauTreeNode(self, nextNode=nextformula.getTableauNode(alreadyintreeabove,
-                                                                                                     ortodo, andtodo,
-                                                                                                     alreadyusedcolors,
-                                                                                                     finished))
+                    return TableauTreeNode.TableauTreeNode(self, nextNode=TableauTreeNode.TableauTreeNode(nextformula))
 
         # Jetzt kommen alle anderen Fälle
         alreadyintreeabove.add(self)
@@ -264,6 +249,9 @@ class Formula:
             ortodo.append((self.direct_subformulas[0], self.direct_subformulas[1]))
         if self.element == ">":
             ortodo.append((self.direct_subformulas[0].negatedFormula(), self.direct_subformulas[1]))
+        if self.element == "=":
+            ortodo.append((self.direct_subformulas[0], self.direct_subformulas[1],
+                           self.direct_subformulas[0].negatedFormula(), self.direct_subformulas[1].negatedFormula()))
         if self.element == "!":
             onlysubform = self.direct_subformulas[0]
             if onlysubform.element == "!":
@@ -277,6 +265,10 @@ class Formula:
             elif onlysubform.element == ">":
                 andtodo.append(onlysubform.direct_subformulas[0])
                 andtodo.append(onlysubform.direct_subformulas[1].negatedFormula())
+            elif onlysubform.element == "=":
+                ortodo.append((onlysubform.direct_subformulas[0], onlysubform.direct_subformulas[1].negatedFormula(),
+                               onlysubform.direct_subformulas[0].negatedFormula(),
+                               onlysubform.direct_subformulas[1]))
 
         if len(andtodo) > 0:
             nextformula = andtodo.pop(0)
@@ -284,11 +276,27 @@ class Formula:
                                                                                              andtodo,
                                                                                              alreadyusedcolors))
         elif len(ortodo) > 0:
-            nextformula1, nextformula2 = ortodo.pop(0)
-            newchildren = [
-                nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors),
-                nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors)]
-            return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
+            nextform = ortodo.pop(0)
+            if len(nextform) == 2:
+                nextformula1 = nextform[0]
+                nextformula2 = nextform[1]
+                newchildren = [
+                    nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors),
+                    nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors)
+                ]
+                return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
+            else:
+                nextformula1 = nextform[0]
+                nextformula2 = nextform[1]
+                nextformula3 = nextform[2]
+                nextformula4 = nextform[3]
+                firstandtodo = [nextformula2,]
+                secondandtodo = [nextformula4,]
+                newchildren = [
+                    nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), firstandtodo, alreadyusedcolors),
+                    nextformula3.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), secondandtodo, alreadyusedcolors)
+                ]
+                return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
         else:
             return TableauTreeNode.TableauTreeNode(self)
 
