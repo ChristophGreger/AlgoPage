@@ -231,6 +231,28 @@ class Formula:
         if andtodo is None:
             andtodo = []
 
+        # Der Fall, dass der Tableau Zweig geschlossen werden kann, weil !True oder False die Formel ist.
+        if self.element == "p":
+            if self.withoutuselessbraces() == "False":
+                self.color = "red"
+                if len(andtodo) % 2 == 0:
+                    return TableauTreeNode.TableauTreeNode(self)
+                # Fall dass ein andtodo muss noch zwingend bearbeitet werden muss
+                elif len(andtodo) % 2 == 1:
+                    nextformula = andtodo.pop(0)
+                    return TableauTreeNode.TableauTreeNode(self, nextNode=TableauTreeNode.TableauTreeNode(nextformula))
+        if self.element == "!":
+            if self.direct_subformulas[0].element == "p":
+                if self.direct_subformulas[0].withoutuselessbraces() == "True":
+                    self.color = "red"
+                    if len(andtodo) % 2 == 0:
+                        return TableauTreeNode.TableauTreeNode(self)
+                    # Fall dass ein andtodo muss noch zwingend bearbeitet werden muss
+                    elif len(andtodo) % 2 == 1:
+                        nextformula = andtodo.pop(0)
+                        return TableauTreeNode.TableauTreeNode(self,
+                                                               nextNode=TableauTreeNode.TableauTreeNode(nextformula))
+
         # Der Fall, dass der Tableau Zweig geschlossen werden kann
         for x in alreadyintreeabove:
             if x.negatedFormula() == self or x == self.negatedFormula():
