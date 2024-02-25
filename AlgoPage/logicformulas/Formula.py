@@ -202,7 +202,7 @@ class Formula:
                                                             self.direct_subformulas[1].getASTdata(True)]}]
 
     # TODO: implement False and True als Variablen und somit dann auch als Knoten mit eigenen Regeln
-    # In andtodo sind einfach nur Formeln, in ortodo sind 2er tupel von Formeln.
+    # In andtodo sind einfach nur Formeln, in ortodo sind 2er tupel von Formeln, oder 4er tuple (der Fall dass die Formel eine Äquivalenz enthält.
     def getTableauNode(self, alreadyintreeabove: Set = None, ortodo: List = None,
                        andtodo: List = None, alreadyusedcolors: Set = None):  # -> TableauTreeNode:
         """Returns the data of the Tableau as the first TableauTreeNode of its Tree."""
