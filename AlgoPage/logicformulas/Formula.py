@@ -249,6 +249,9 @@ class Formula:
             ortodo.append((self.direct_subformulas[0], self.direct_subformulas[1]))
         if self.element == ">":
             ortodo.append((self.direct_subformulas[0].negatedFormula(), self.direct_subformulas[1]))
+        if self.element == "=":
+            ortodo.append((self.direct_subformulas[0], self.direct_subformulas[1],
+                           self.direct_subformulas[0].negatedFormula(), self.direct_subformulas[1].negatedFormula()))
         if self.element == "!":
             onlysubform = self.direct_subformulas[0]
             if onlysubform.element == "!":
@@ -262,6 +265,10 @@ class Formula:
             elif onlysubform.element == ">":
                 andtodo.append(onlysubform.direct_subformulas[0])
                 andtodo.append(onlysubform.direct_subformulas[1].negatedFormula())
+            elif onlysubform.element == "=":
+                ortodo.append((onlysubform.direct_subformulas[0], onlysubform.direct_subformulas[1].negatedFormula(),
+                               onlysubform.direct_subformulas[0].negatedFormula(),
+                               onlysubform.direct_subformulas[1]))
 
         if len(andtodo) > 0:
             nextformula = andtodo.pop(0)
@@ -269,11 +276,27 @@ class Formula:
                                                                                              andtodo,
                                                                                              alreadyusedcolors))
         elif len(ortodo) > 0:
-            nextformula1, nextformula2 = ortodo.pop(0)
-            newchildren = [
-                nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors),
-                nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors)]
-            return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
+            nextform = ortodo.pop(0)
+            if len(nextform) == 2:
+                nextformula1 = nextform[0]
+                nextformula2 = nextform[1]
+                newchildren = [
+                    nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors),
+                    nextformula2.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), None, alreadyusedcolors)
+                ]
+                return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
+            else:
+                nextformula1 = nextform[0]
+                nextformula2 = nextform[1]
+                nextformula3 = nextform[2]
+                nextformula4 = nextform[3]
+                firstandtodo = [nextformula2,]
+                secondandtodo = [nextformula4,]
+                newchildren = [
+                    nextformula1.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), firstandtodo, alreadyusedcolors),
+                    nextformula3.getTableauNode(alreadyintreeabove.copy(), copy.deepcopy(ortodo), secondandtodo, alreadyusedcolors)
+                ]
+                return TableauTreeNode.TableauTreeNode(self, ListOfChildren=newchildren)
         else:
             return TableauTreeNode.TableauTreeNode(self)
 
