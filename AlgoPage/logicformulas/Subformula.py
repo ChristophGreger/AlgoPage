@@ -1,4 +1,4 @@
-# Funktion zum Feststellen, ob die formula ein Ausdruck ist, der komplett von Klammern umschlossen ist
+# Function to check if the formula is an expression that is completely enclosed by brackets
 def uselessbraces(form):
     if isvariable_or_primitive(form):
         return False
@@ -17,7 +17,7 @@ def uselessbraces(form):
             return True
 
 
-# Funktion zum testen ob etwas nur eine Variable ist
+# Function to check if the formula is a variable
 def isvariable(form):
     if isvariable_or_primitive(form):
         if form.upper() == "TRUE" or form.upper() == "FALSE":
@@ -26,6 +26,7 @@ def isvariable(form):
     return False
 
 
+# Function to check if the formula is a variable or a primitive (like False or True)
 def isvariable_or_primitive(form):
     for x in form:
         if x in {"|", "&", "!", "(", ")", ">", "="}:
@@ -33,7 +34,7 @@ def isvariable_or_primitive(form):
     return True
 
 
-# Funktion um zu testen ob etwas nur ein Primitiv ist, also entweder TRUE oder FALSE
+# Function to check if the formula is a primitive like True or False
 def isprimitive(form):
     if isvariable_or_primitive(form):
         if form.upper() == "TRUE" or form.upper() == "FALSE":
@@ -42,14 +43,14 @@ def isprimitive(form):
     return False
 
 
-# Funktion um zu testen ob etwas eine Negation von etwas ist
+# Function to check if the formula is a negation
 def isnegation(form):
     if form[0] == "!" and (uselessbraces(form[1:]) or isvariable_or_primitive(form[1:])):
         return True
     return False
 
 
-# Funktion um zu schauen, ob etwas ein regelkonformer Klammerausdruck ist
+# Function to check if the formula has correct braces
 def correctbraces(form):
     opening = 0
     closing = 0
@@ -65,73 +66,73 @@ def correctbraces(form):
     return True
 
 
+# Function to remove useless braces (but just them that are completely around the formula)
 def elminateuselessbraces(form):
     if uselessbraces(form):
         return form[1:-1]
     return form
 
 
-# Funktion um alle unmittelbaren Subformulas zu finden (Nächste Ebene im Syntaxbaum). Funktion gibt auch das höchste
-# Element im Syntaxbaum zurück und dessen Position in der Formel (In der Version ohne unnötige Klammern)
+# Function to find all direct subformulas and the highest element in the syntax tree, also the position of the highest element (without useless braces)
 def directsubformulas(form):
     if form == "":
         return [], "e", 0
 
     dirsubformulas = []
 
-    # Entferne alle unnötigen Klammern (Aber nur die, die komplett aussenrum sind)
+    # Delete all useless braces around the formula
     if uselessbraces(form):
         return directsubformulas(form[1:-1])
 
-    # Checken ob form einfach nur eine einzige Variable ist
+    # check if the formula is just a single variable
     if isvariable(form):
         return [], "v", 0
 
-    # Checken ob form einfach nur ein einziges Primitiv ist
+    # Check if the formula is just a single primitive
     if isprimitive(form):
         return [], "p", 0
 
-    # Nun muss man das oberste Element im Syntaxbaum finden
+    # Now we have to find the highest element in the syntax tree
 
-    # Checken ob das oberste Element ein logisches Nicht ist
+    # check if the highest element is a negation
     if isnegation(form):
         dirsubformulas.append(elminateuselessbraces(form[1:]))
         return dirsubformulas, "!", 0
 
-    # Checken ob das oberste Element eine logische Äquivalenz ist. Äquivalenz wird RECHTSASSOZIATIV behandelt
+    # Check if the highest element is a logical equivalence. Equivalence is treated as LEFTASSOCIATIVE
     for i in range(len(form)):
         if form[-i] == "=" and correctbraces(form[-i + 1:]):
             dirsubformulas.append(elminateuselessbraces(form[:-i]))
             dirsubformulas.append(elminateuselessbraces(form[-i + 1:]))
             return dirsubformulas, "=", i
 
-    # Checken ob das oberste Element eine logische Implikation ist
+    # check if the highest element is a logical implication. Implication is treated as RIGHTASSOCIATIVE
     for i in range(len(form)):
         if form[i] == ">" and correctbraces(form[i + 1:]):
             dirsubformulas.append(elminateuselessbraces(form[:i]))
             dirsubformulas.append(elminateuselessbraces(form[i + 1:]))
             return dirsubformulas, ">", i
 
-    # Checken ob das oberste Element ein logisches Oder ist
+    # check if the highest element is a logical or. Or is treated as LEFTASSOCIATIVE
     for i in range(len(form)):
         if form[-i] == "|" and correctbraces(form[-i + 1:]):
             dirsubformulas.append(elminateuselessbraces(form[:-i]))
             dirsubformulas.append(elminateuselessbraces(form[-i + 1:]))
             return dirsubformulas, "|", i
 
-    # Nun muss das oberste Element ein logisches UND sein
+    # check if the highest element is a logical and. And is treated as LEFTASSOCIATIVE
     for i in range(len(form)):
         if form[-i] == "&" and correctbraces(form[-i + 1:]):
             dirsubformulas.append(elminateuselessbraces(form[:-i]))
             dirsubformulas.append(elminateuselessbraces(form[-i + 1:]))
             return dirsubformulas, "&", i
 
+    # If the formula is not syntactically correct, raise an error
     raise ValueError("Formel ist nicht syntaktisch korrekt")
 
 
-# & ist das logische Und, | ist das logische Oder, > ist die logische Implikation, = ist die logische Äquivalenz und
-# ! ist das logische Nicht
-# Variablen dürfen logischerweise kein logisches Zeichen oder Klammern beinhalten.
+# & ist the logic and, | is the logic or, > is the logic implication, = is the logic equivalence and ! is the logic not
+# Variables are not allowed to contain any logic symbols or braces
 
 if __name__ == "__main__":
     while True:
