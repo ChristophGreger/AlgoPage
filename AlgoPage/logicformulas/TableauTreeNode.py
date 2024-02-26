@@ -18,6 +18,7 @@ class TableauTreeNode:
     def __str__(self):
         return str(self.formula)
 
+    # Just for testing purposes
     def print(self):
         print(self.formula.withoutuselessbraces())
         for child in self.children:

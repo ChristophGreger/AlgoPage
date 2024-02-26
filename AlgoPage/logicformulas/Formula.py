@@ -6,8 +6,9 @@ from AlgoPage.logicformulas import Colors
 
 
 class Formula:
+    # Class for the representation of a formula in propositional logic.
 
-    # Wenn die Formel nicht syntaktisch korrekt ist, wird eine ValueError-Exception geworfen
+    # If the formula is not syntactically correct, a ValueError-Exception is thrown
     def __init__(self, formula: str):
         self.formula_string = Subformula.elminateuselessbraces(formula)
         self.bare_string = formula
