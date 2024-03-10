@@ -1,6 +1,6 @@
 # Algorithm Visualizer
 
-A visualization of different algorithms using Python and Reflex.
+A visualization of different algorithms using Python and Reflex. For visiting a hosted page of this repository click [here](http://christophgreger.de:3000)
 
 ## Segments
 
